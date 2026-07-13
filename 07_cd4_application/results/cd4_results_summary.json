@@ -1,0 +1,199 @@
+{
+ "experiment": "CD4+ T-cell single-cell refinement depth (STATE oracle-ACT, HVG)",
+ "donors": [
+  "D1",
+  "D4"
+ ],
+ "conditions": [
+  "Rest",
+  "Stim8hr",
+  "Stim48hr"
+ ],
+ "backbone": "frozen ARC ST-HVG-Replogle 8-layer + trained resp_head/adapters, per-condition",
+ "stage1_within_donor_splithalf_rho": {
+  "Rest": {
+   "rho": 0.6150357976502281,
+   "n": 6524,
+   "EN_mean": 6.8547286418666875
+  },
+  "Stim8hr": {
+   "rho": 0.6777872045435118,
+   "n": 6857,
+   "EN_mean": 7.195905013423072
+  },
+  "Stim48hr": {
+   "rho": 0.7479365236569983,
+   "n": 6649,
+   "EN_mean": 7.253808730777036
+  }
+ },
+ "stageX_cross_donor_rho": {
+  "Rest": {
+   "rho": -0.11009532657343435,
+   "n_shared": 5745,
+   "p": 5.840880718553685e-17,
+   "EN_D1": 6.67782476888313,
+   "EN_D4": 5.323168005997249
+  },
+  "Stim8hr": {
+   "rho": -0.0970344148963589,
+   "n_shared": 6074,
+   "p": 3.487803270117154e-14,
+   "EN_D1": 7.770281451212406,
+   "EN_D4": 5.149171296608931
+  },
+  "Stim48hr": {
+   "rho": 0.48592133252628344,
+   "n_shared": 5840,
+   "p": 0.0,
+   "EN_D1": 7.79892880287889,
+   "EN_D4": 6.535263839609002
+  }
+ },
+ "stage2_categories": {
+  "damaging": 1248,
+  "inflammatory": 919,
+  "other": 2228,
+  "resting_sparing_suppressor": 594
+ },
+ "stage2_canon_axis_loading": 0.040698595345020294,
+ "stage2_top_activation_genes": [
+  "IL2RA",
+  "DDIT4",
+  "CCL3",
+  "ZBED2",
+  "ELL2",
+  "CCL4",
+  "LAG3",
+  "SCD",
+  "HSPD1",
+  "MIF",
+  "ZBTB32",
+  "IFNG"
+ ],
+ "stage3_thesis_test_Stim48hr_EN": {
+  "kruskal_p": 5.191579127037821e-28,
+  "medians": {
+   "damaging": 7.3660056591033936,
+   "inflammatory": 7.264278411865234,
+   "other": 7.471166372299194,
+   "resting_sparing_suppressor": 7.226772308349609
+  },
+  "suppressor_vs_others": {
+   "damaging": {
+    "cliffs_delta": -0.16164853664853665,
+    "mw_p": 1.9631448420349526e-08
+   },
+   "inflammatory": {
+    "cliffs_delta": -0.010628592783108562,
+    "mw_p": 0.7267125228980054
+   },
+   "other": {
+    "cliffs_delta": -0.23907990739229518,
+    "mw_p": 3.0753698059161417e-19
+   }
+  }
+ },
+ "key_findings": [
+  "Within-donor E[N] split-half reproducibility is high and RISES with stimulation: Rest 0.62, Stim8h 0.68, Stim48h 0.75.",
+  "Cross-donor E[N] does NOT transfer in Rest (rho=-0.11) or Stim8h (rho=-0.10), but becomes portable at Stim48h (rho=0.49).",
+  "Refinement depth is therefore donor/context-specific except where the biology converges (stimulated endpoint) - consistent with cell-type-specificity of depth.",
+  "Resting-sparing suppressors have LOWER E[N] at Stim48h than damaging (delta=-0.16) and generic 'other' (delta=-0.24) perturbations (kruskal p=5e-28) - a distinct refinement signature, confirming CD4 Part-2 thesis.",
+  "Drug-target status is NOT enriched in any CD4 depth cluster (all OR 0.64-1.25); druggability/toxicity flat across the 9 Leiden clusters (approved/clinical 5-8%, DepMap common-essential 1-2%, LoF-intolerant 4-8%). Drug/depth co-localization is cell-context-dependent (Leiden x annotated CSV only)."
+ ],
+ "leiden_drug_toxicity": {
+  "note": "Per-Leiden-cluster drug + toxicity from the annotated CD4 CSV (no STRING). Baseline drug 7.0%, essential 1.6%.",
+  "per_cluster": [
+   {
+    "leiden": 5,
+    "n": 496,
+    "mean_EN_Stim48h": 5.85,
+    "drug_pct": 6.2,
+    "drug_OR": 0.88,
+    "drug_p": 0.577,
+    "essential_pct": 1.9,
+    "immune_pct": 56.5
+   },
+   {
+    "leiden": 2,
+    "n": 571,
+    "mean_EN_Stim48h": 7.24,
+    "drug_pct": 6.1,
+    "drug_OR": 0.86,
+    "drug_p": 0.484,
+    "essential_pct": 1.7,
+    "immune_pct": 57.6
+   },
+   {
+    "leiden": 3,
+    "n": 567,
+    "mean_EN_Stim48h": 7.32,
+    "drug_pct": 6.9,
+    "drug_OR": 0.99,
+    "drug_p": 1.0,
+    "essential_pct": 2.4,
+    "immune_pct": 51.1
+   },
+   {
+    "leiden": 1,
+    "n": 576,
+    "mean_EN_Stim48h": 7.4,
+    "drug_pct": 7.1,
+    "drug_OR": 1.03,
+    "drug_p": 0.862,
+    "essential_pct": 1.3,
+    "immune_pct": 51.9
+   },
+   {
+    "leiden": 7,
+    "n": 465,
+    "mean_EN_Stim48h": 7.41,
+    "drug_pct": 4.7,
+    "drug_OR": 0.64,
+    "drug_p": 0.055,
+    "essential_pct": 1.1,
+    "immune_pct": 54.6
+   },
+   {
+    "leiden": 4,
+    "n": 533,
+    "mean_EN_Stim48h": 7.45,
+    "drug_pct": 8.3,
+    "drug_OR": 1.23,
+    "drug_p": 0.208,
+    "essential_pct": 1.8,
+    "immune_pct": 53.7
+   },
+   {
+    "leiden": 8,
+    "n": 429,
+    "mean_EN_Stim48h": 7.45,
+    "drug_pct": 7.9,
+    "drug_OR": 1.17,
+    "drug_p": 0.426,
+    "essential_pct": 2.0,
+    "immune_pct": 51.7
+   },
+   {
+    "leiden": 0,
+    "n": 863,
+    "mean_EN_Stim48h": 7.52,
+    "drug_pct": 7.0,
+    "drug_OR": 1.0,
+    "drug_p": 1.0,
+    "essential_pct": 1.1,
+    "immune_pct": 52.4
+   },
+   {
+    "leiden": 6,
+    "n": 489,
+    "mean_EN_Stim48h": 7.56,
+    "drug_pct": 8.4,
+    "drug_OR": 1.25,
+    "drug_p": 0.19,
+    "essential_pct": 1.9,
+    "immune_pct": 54.4
+   }
+  ]
+ }
+}

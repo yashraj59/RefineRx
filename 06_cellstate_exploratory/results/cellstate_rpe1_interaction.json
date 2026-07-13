@@ -1,0 +1,450 @@
+{
+  "line": "rpe1",
+  "n_perts": 955,
+  "R": 8,
+  "n_states": 3,
+  "common_n": 2734,
+  "NBOOT": 15,
+  "NPERM": 25,
+  "control_state_counts": {
+    "G1": 2734,
+    "S": 3850,
+    "G2M": 4901
+  },
+  "splithalf": {
+    "G1": {
+      "EN": 0.9811094486597781,
+      "ARG": 0.8598965497283427,
+      "RST": 0.8618399169422508
+    },
+    "S": {
+      "EN": 0.9831442808831379,
+      "ARG": 0.8574794451891163,
+      "RST": 0.8744824447041986
+    },
+    "G2M": {
+      "EN": 0.9842601411875241,
+      "ARG": 0.8738631463960884,
+      "RST": 0.8667891837835902
+    }
+  },
+  "cross_state": {
+    "EN": {
+      "G1_S": 0.9985613357377892,
+      "G1_G2M": 0.998507162449343,
+      "S_G2M": 0.9986391168173939
+    },
+    "ARG": {
+      "G1_S": 0.9375288788836731,
+      "G1_G2M": 0.9136614678035452,
+      "S_G2M": 0.9395724012511203
+    },
+    "RST": {
+      "G1_S": 0.9412760484320497,
+      "G1_G2M": 0.9146952797460185,
+      "S_G2M": 0.9368561060010063
+    }
+  },
+  "interaction": {
+    "EN": {
+      "friedman_stat": 6.913089005236543,
+      "friedman_p": 0.03153855533799257,
+      "mean_cross_state_sd": 0.0075110383803596295,
+      "state_means": {
+        "G1": 7.7385990864319325,
+        "S": 7.736793433600487,
+        "G2M": 7.737531862225624
+      },
+      "null_cross_state_sd_mean": 0.028312828720513553,
+      "null_cross_state_sd_std": 0.0009326257300001482,
+      "real_vs_null_sd_p": 1.0,
+      "real_cross_state_mean_corr": 0.9985692050015086,
+      "null_cross_state_mean_corr": 0.9824674863912913
+    },
+    "ARG": {
+      "friedman_stat": 70.22889610389795,
+      "friedman_p": 5.623270510175343e-16,
+      "mean_cross_state_sd": 0.1269697261221638,
+      "state_means": {
+        "G1": 6.86673647469459,
+        "S": 6.891797556719022,
+        "G2M": 6.777731239092496
+      },
+      "null_cross_state_sd_mean": 0.21229821874588278,
+      "null_cross_state_sd_std": 0.01391895799790793,
+      "real_vs_null_sd_p": 1.0,
+      "real_cross_state_mean_corr": 0.9302542493127796,
+      "null_cross_state_mean_corr": 0.8592403624741499
+    },
+    "RST": {
+      "friedman_stat": 64.35708692247789,
+      "friedman_p": 1.0593418728987568e-14,
+      "mean_cross_state_sd": 0.13281240187970164,
+      "state_means": {
+        "G1": 6.798603839441536,
+        "S": 6.820942408376963,
+        "G2M": 6.701989528795811
+      },
+      "null_cross_state_sd_mean": 0.21821689184381082,
+      "null_cross_state_sd_std": 0.013701730494512671,
+      "real_vs_null_sd_p": 1.0,
+      "real_cross_state_mean_corr": 0.9309424780596914,
+      "null_cross_state_mean_corr": 0.8610978634737121
+    }
+  },
+  "depth_state_associations": {
+    "EN|occ_entropy": {
+      "spearman": 0.2370710575217476,
+      "partial_spearman": -0.09180809653534881
+    },
+    "EN|state_div": {
+      "spearman": -0.2671429990663463,
+      "partial_spearman": 0.1909640983545349
+    },
+    "EN|cell_disp": {
+      "spearman": -0.0048732941858377656,
+      "partial_spearman": 0.05038737613821405
+    },
+    "ARG|occ_entropy": {
+      "spearman": -0.021098441914035142,
+      "partial_spearman": 0.10046040397669335
+    },
+    "ARG|state_div": {
+      "spearman": 0.1533850354389469,
+      "partial_spearman": 0.21007638129115092
+    },
+    "ARG|cell_disp": {
+      "spearman": -0.016631610004773287,
+      "partial_spearman": 0.00652333343115385
+    },
+    "RST|occ_entropy": {
+      "spearman": -0.024498236660823906,
+      "partial_spearman": 0.09174484385985433
+    },
+    "RST|state_div": {
+      "spearman": 0.1536499846697296,
+      "partial_spearman": 0.2192895585139603
+    },
+    "RST|cell_disp": {
+      "spearman": -0.019073035432577844,
+      "partial_spearman": 0.006043764899545906
+    }
+  },
+  "partA_stats": {
+    "EN|indirectness": {
+      "std_beta_depth": -0.27239374575054454,
+      "p": 5.19735107349965e-20,
+      "partial_spearman": -0.08683379922077002
+    },
+    "EN|path_length": {
+      "std_beta_depth": -0.18703461174799957,
+      "p": 1.4762626695068555e-14,
+      "partial_spearman": -0.06644189991693522
+    },
+    "EN|progression_dip": {
+      "std_beta_depth": -0.3045828052604226,
+      "p": 6.035864470926973e-37,
+      "partial_spearman": -0.4726023467831035
+    },
+    "EN|nonmonotonicity": {
+      "std_beta_depth": 0.20845011856334456,
+      "p": 7.228839846332641e-10,
+      "partial_spearman": 0.3211574344075541
+    },
+    "EN|recovery": {
+      "std_beta_depth": 0.3045828052604226,
+      "p": 6.035864470926973e-37,
+      "partial_spearman": 0.4726023467831035
+    },
+    "EN|nonlin_correction": {
+      "std_beta_depth": 0.2506380935908044,
+      "p": 1.7809856031630305e-24,
+      "partial_spearman": 0.41365234119631183
+    },
+    "EN|late_cell_cycle": {
+      "std_beta_depth": 0.31123988353632465,
+      "p": 5.44768698292882e-27,
+      "partial_spearman": 0.36511997273149743
+    },
+    "EN|slope_cell_cycle": {
+      "std_beta_depth": 0.29183895790938436,
+      "p": 2.4699494426311226e-26,
+      "partial_spearman": 0.3530337793535607
+    },
+    "EN|late_dna_damage": {
+      "std_beta_depth": 0.1756730987330303,
+      "p": 6.555163001758383e-08,
+      "partial_spearman": -0.005447114852722944
+    },
+    "EN|slope_dna_damage": {
+      "std_beta_depth": 0.1707761732167296,
+      "p": 6.595766038297419e-08,
+      "partial_spearman": -0.008363213368179481
+    },
+    "EN|late_translation": {
+      "std_beta_depth": -0.4572150333232534,
+      "p": 1.5935537273333394e-42,
+      "partial_spearman": -0.4964235027708695
+    },
+    "EN|slope_translation": {
+      "std_beta_depth": -0.44704938107564707,
+      "p": 2.685912458596639e-40,
+      "partial_spearman": -0.4769376556775648
+    },
+    "EN|late_stress": {
+      "std_beta_depth": 0.04705672528614718,
+      "p": 0.14282654880231108,
+      "partial_spearman": -0.09896106343853447
+    },
+    "EN|slope_stress": {
+      "std_beta_depth": 0.05578905760112818,
+      "p": 0.07827159076201325,
+      "partial_spearman": -0.08115456041319387
+    },
+    "EN|late_apoptosis": {
+      "std_beta_depth": 0.19864254878507362,
+      "p": 1.5488085620933394e-08,
+      "partial_spearman": 0.08082715100773732
+    },
+    "EN|slope_apoptosis": {
+      "std_beta_depth": 0.20331147769914687,
+      "p": 6.0998641270568815e-09,
+      "partial_spearman": 0.07355870078370769
+    },
+    "EN|late_interferon": {
+      "std_beta_depth": -0.02362705974966299,
+      "p": 0.5026764565073453,
+      "partial_spearman": 0.0008136049326891506
+    },
+    "EN|slope_interferon": {
+      "std_beta_depth": -0.0360815230301742,
+      "p": 0.30520665005665476,
+      "partial_spearman": -0.013639486753655282
+    },
+    "EN|late_mitochondrial": {
+      "std_beta_depth": -0.1601639312987711,
+      "p": 4.657263250926192e-06,
+      "partial_spearman": -0.2804677777148603
+    },
+    "EN|slope_mitochondrial": {
+      "std_beta_depth": -0.1738883640424408,
+      "p": 4.4035619388928905e-07,
+      "partial_spearman": -0.28646132348955816
+    },
+    "argmin_depth|indirectness": {
+      "std_beta_depth": -0.09825419504807634,
+      "p": 0.0004958666919067284,
+      "partial_spearman": -0.13658295848097687
+    },
+    "argmin_depth|path_length": {
+      "std_beta_depth": -0.07826903656663205,
+      "p": 0.0006408778558941866,
+      "partial_spearman": -0.2405192285515771
+    },
+    "argmin_depth|progression_dip": {
+      "std_beta_depth": -0.17334194610974024,
+      "p": 4.147358837806328e-14,
+      "partial_spearman": -0.2538398479731382
+    },
+    "argmin_depth|nonmonotonicity": {
+      "std_beta_depth": 0.08471225339068078,
+      "p": 0.007637615048206333,
+      "partial_spearman": 0.17045462154412855
+    },
+    "argmin_depth|recovery": {
+      "std_beta_depth": 0.17334194610974027,
+      "p": 4.147358837806248e-14,
+      "partial_spearman": 0.2538398479731382
+    },
+    "argmin_depth|nonlin_correction": {
+      "std_beta_depth": 0.15184783191259263,
+      "p": 6.19267108776658e-11,
+      "partial_spearman": 0.2261319934953489
+    },
+    "argmin_depth|late_cell_cycle": {
+      "std_beta_depth": 0.1278994871938062,
+      "p": 3.5988003113448954e-06,
+      "partial_spearman": 0.26758514621618523
+    },
+    "argmin_depth|slope_cell_cycle": {
+      "std_beta_depth": 0.12482557042141816,
+      "p": 1.8892059561583467e-06,
+      "partial_spearman": 0.2813782111823731
+    },
+    "argmin_depth|late_dna_damage": {
+      "std_beta_depth": 0.08047079309849453,
+      "p": 0.008219118109709716,
+      "partial_spearman": 0.14827724979957127
+    },
+    "argmin_depth|slope_dna_damage": {
+      "std_beta_depth": 0.0817367332756545,
+      "p": 0.0057554771420948924,
+      "partial_spearman": 0.15689668403600843
+    },
+    "argmin_depth|late_translation": {
+      "std_beta_depth": -0.14764605909994738,
+      "p": 5.596098960214924e-06,
+      "partial_spearman": -0.21878659572336961
+    },
+    "argmin_depth|slope_translation": {
+      "std_beta_depth": -0.13705006065761252,
+      "p": 2.6769583758150414e-05,
+      "partial_spearman": -0.21006739833658275
+    },
+    "argmin_depth|late_stress": {
+      "std_beta_depth": 0.07395088893947929,
+      "p": 0.013281497317977783,
+      "partial_spearman": 0.09798440134738806
+    },
+    "argmin_depth|slope_stress": {
+      "std_beta_depth": 0.08055290687589486,
+      "p": 0.0062568943083254214,
+      "partial_spearman": 0.11294717926271161
+    },
+    "argmin_depth|late_apoptosis": {
+      "std_beta_depth": 0.12387858774151299,
+      "p": 0.00016252728424530108,
+      "partial_spearman": 0.0648397238375237
+    },
+    "argmin_depth|slope_apoptosis": {
+      "std_beta_depth": 0.12545940782623488,
+      "p": 0.00012588296779478635,
+      "partial_spearman": 0.0634530008923711
+    },
+    "argmin_depth|late_interferon": {
+      "std_beta_depth": -0.024557754058684683,
+      "p": 0.45424702001808587,
+      "partial_spearman": -0.005700635323595094
+    },
+    "argmin_depth|slope_interferon": {
+      "std_beta_depth": -0.02711515544375807,
+      "p": 0.40791307325790943,
+      "partial_spearman": -0.01114214271848178
+    },
+    "argmin_depth|late_mitochondrial": {
+      "std_beta_depth": -0.03609164606442774,
+      "p": 0.27013911101809995,
+      "partial_spearman": -0.07319427113450169
+    },
+    "argmin_depth|slope_mitochondrial": {
+      "std_beta_depth": -0.04085262722969364,
+      "p": 0.2053177868553822,
+      "partial_spearman": -0.07169771365895442
+    },
+    "oracle_rstar|indirectness": {
+      "std_beta_depth": -0.0974061922843498,
+      "p": 0.0005360974987826756,
+      "partial_spearman": -0.1287673471254752
+    },
+    "oracle_rstar|path_length": {
+      "std_beta_depth": -0.08458254674881066,
+      "p": 0.00021480610697595498,
+      "partial_spearman": -0.24015777485051024
+    },
+    "oracle_rstar|progression_dip": {
+      "std_beta_depth": -0.1743482211118898,
+      "p": 2.4876975311276207e-14,
+      "partial_spearman": -0.25021777464935824
+    },
+    "oracle_rstar|nonmonotonicity": {
+      "std_beta_depth": 0.09219933381106621,
+      "p": 0.003587923269351005,
+      "partial_spearman": 0.16973424920892824
+    },
+    "oracle_rstar|recovery": {
+      "std_beta_depth": 0.17434822111188988,
+      "p": 2.4876975311275478e-14,
+      "partial_spearman": 0.25021777464935824
+    },
+    "oracle_rstar|nonlin_correction": {
+      "std_beta_depth": 0.14916875945049546,
+      "p": 1.2052987781371548e-10,
+      "partial_spearman": 0.2211974030443674
+    },
+    "oracle_rstar|late_cell_cycle": {
+      "std_beta_depth": 0.14495063095423938,
+      "p": 1.3359331258638176e-07,
+      "partial_spearman": 0.2759551381329039
+    },
+    "oracle_rstar|slope_cell_cycle": {
+      "std_beta_depth": 0.14101747680255636,
+      "p": 6.419779053738344e-08,
+      "partial_spearman": 0.2889838253085376
+    },
+    "oracle_rstar|late_dna_damage": {
+      "std_beta_depth": 0.07350637867560447,
+      "p": 0.015522682966906152,
+      "partial_spearman": 0.13917550530152764
+    },
+    "oracle_rstar|slope_dna_damage": {
+      "std_beta_depth": 0.07525825952176476,
+      "p": 0.010816155091401507,
+      "partial_spearman": 0.1475114804777113
+    },
+    "oracle_rstar|late_translation": {
+      "std_beta_depth": -0.14465081118495493,
+      "p": 8.194196236904098e-06,
+      "partial_spearman": -0.21268762423033508
+    },
+    "oracle_rstar|slope_translation": {
+      "std_beta_depth": -0.13405114567247953,
+      "p": 3.8263550443426594e-05,
+      "partial_spearman": -0.20405365469164424
+    },
+    "oracle_rstar|late_stress": {
+      "std_beta_depth": 0.07946105222829138,
+      "p": 0.007620091201441228,
+      "partial_spearman": 0.09841140857274217
+    },
+    "oracle_rstar|slope_stress": {
+      "std_beta_depth": 0.08596019433289542,
+      "p": 0.003431430261701633,
+      "partial_spearman": 0.11287622494365332
+    },
+    "oracle_rstar|late_apoptosis": {
+      "std_beta_depth": 0.11879435573759768,
+      "p": 0.0002889716001546919,
+      "partial_spearman": 0.0570157770717249
+    },
+    "oracle_rstar|slope_apoptosis": {
+      "std_beta_depth": 0.11964778470940143,
+      "p": 0.00024701403837509807,
+      "partial_spearman": 0.05466403405476653
+    },
+    "oracle_rstar|late_interferon": {
+      "std_beta_depth": -0.02373182860761172,
+      "p": 0.46838064170769433,
+      "partial_spearman": -0.004067652669928361
+    },
+    "oracle_rstar|slope_interferon": {
+      "std_beta_depth": -0.028057837840288702,
+      "p": 0.39053373465256436,
+      "partial_spearman": -0.01068913727952323
+    },
+    "oracle_rstar|late_mitochondrial": {
+      "std_beta_depth": -0.039947984971717136,
+      "p": 0.22097839139744951,
+      "partial_spearman": -0.0745772328118673
+    },
+    "oracle_rstar|slope_mitochondrial": {
+      "std_beta_depth": -0.04549884477657859,
+      "p": 0.15720939442415946,
+      "partial_spearman": -0.07343935975231294
+    }
+  },
+  "pathway_n": {
+    "cell_cycle": 151,
+    "dna_damage": 29,
+    "translation": 23,
+    "stress": 34,
+    "apoptosis": 41,
+    "interferon": 28,
+    "mitochondrial": 38
+  },
+  "ntc_statedist": [
+    0.23804962995211146,
+    0.3352198519808446,
+    0.426730518067044
+  ],
+  "note": "model-implied intermediate states; frozen backbone; halt head trained once per line then fixed across states; target=global response, basal=state-specific controls"
+}

@@ -1,0 +1,19 @@
+# checkpoints / large model weights (halt-head .pt files are kept intentionally)
+*.ckpt
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# virtual environments
+.venv*
+venv/
+env/
+
+# single-cell data (re-fetched / re-generated from code)
+*.h5ad
+
+# OS / editor cruft
+.DS_Store
