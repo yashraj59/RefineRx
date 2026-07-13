@@ -23,11 +23,10 @@
 \renewcommand{\rho}{\ensuremath{\mathrho}}
 \renewcommand{\arraystretch}{1.15}
 
-\title{\textbf{Adaptive-depth halting as a per-perturbation signature:\\
-a reproducible, effect-size-independent, cell-type-specific property\\
-recovered from single-endpoint Perturb-seq}}
+\title{\textbf{When Does a Perturbation Model Know Enough?\\
+Learned Halting as a Biological Model Readout}}
 
-\author{Anonymous Author(s)}
+\author{Yash Raj}
 \date{}
 
 \begin{document}
@@ -35,37 +34,37 @@ recovered from single-endpoint Perturb-seq}}
 
 \begin{abstract}
 \noindent
-Most Perturb-seq experiments measure a single endpoint --- control versus perturbed ---
-yet the biology underneath ranges from direct target effects to feedback, compensation, and
-context-specific regulatory cascades. We ask whether an adaptive-depth model's \emph{halting
-behaviour} --- how much iterative refinement it needs to predict a perturbation's endpoint
-response --- is a reproducible, effect-size-independent property of each perturbation, and
-whether it carries information beyond response magnitude. Halting depth is treated throughout
-as a \emph{computational proxy for response complexity}, explicitly not biological time or
-causal depth, both of which a single endpoint cannot recover. Grafting learned halting
-(ACT/PonderNet) onto diffusion (scDiff), graph-message-passing (TxPert), and purpose-built
-refiners all failed in one of two ways: the halt depth collapsed to a pure effect-size proxy,
-or it was irreproducible across seeds. This identifiability wall motivated a
-magnitude-free, oracle-supervised scheme built on a \emph{frozen} pretrained perturbation
-foundation model (ARC Institute STATE, \texttt{ST-SE-Replogle}), whose eight transformer
-layers are read as eight refinement rounds. A learnable refinement token drives a
-LayerNorm-stabilised halt head trained against a per-perturbation oracle stopping round;
-the expected halting depth \EN{} is a stop-mass-weighted mixture over per-round decoded
-predictions. On K562 (968 perturbations), \EN{} is reproducible (split-half \rho{}$=0.76$),
-effect-size-independent (partial \rho{}$=-0.04$ controlling \#DE and cell count), and recovers
-its oracle target (\rho{}$=0.61$). Across four Replogle lines the learned-\EN{} split-half
-reproducibility averages \rho{}$=0.80$ --- below the \rho{}$\approx0.97$ effect-size noise
-ceiling --- but the depth ranking does \emph{not} port across cell types (cross-line \rho{}$=0.14$;
-model-free ceiling \rho{}$=0.011$) or across donors of primary CD4$^+$ T cells in the resting state
-(single-cell cross-donor \rho{}$\approx0$), while porting at the stimulated endpoint where donors
-converge (\rho{}$=0.49$). Depth is independent of knockdown strength and target abundance in all four
-lines, and its sign relative to response magnitude is set by the cellular context. Applied to
-drug-target discovery, \EN{} does not sharpen target-class identification beyond response and
-network similarity (three of four lines negative). We conclude that adaptive-depth halting is a
-reproducible, effect-independent, cell-type-specific property of a perturbation's response
-recoverable from single-endpoint data, but is neither portable across contexts nor a value-add
-for target prioritisation --- a set of rigorous negative and positive results that together
-delimit what halting-based signatures can and cannot claim.
+Most Perturb-seq experiments measure a single endpoint --- control versus perturbed --- yet the
+biology underneath ranges from direct target effects to feedback, compensation, and
+context-specific regulatory cascades, so two perturbations of very different mechanistic complexity
+can land at responses of identical magnitude. Adaptive-computation halting (ACT/PonderNet) was
+invented to save compute --- an easy input exits early, a hard one ponders longer. We repurpose it,
+to our knowledge for the first time on a perturbation-response model, as a \emph{measurement} rather
+than a stop rule: on a frozen backbone whose eight transformer layers always execute, halting saves
+no compute, and the layer at which the model's endpoint estimate converges is read as a
+per-perturbation proxy for response complexity --- not biological time or causal depth, which a
+single endpoint cannot recover. We ask whether this halting depth \EN{} is reproducible,
+effect-size-independent, and informative beyond response magnitude. A magnitude-free,
+oracle-supervised halting head on ARC Institute's frozen STATE model clears both gates: on K562
+(968 perturbations) \EN{} is reproducible (split-half \rho{}$=0.76$), effect-independent
+(partial \rho{}$=-0.04$ controlling \#DE and cell count), and recovers its oracle target
+(\rho{}$=0.61$), where a naive learned gate collapses to a per-seed constant. Across four Replogle
+lines \EN{} reproduces within each line (mean \rho{}$=0.80$) but does not port across cell types
+(\rho{}$=0.14$). On a two-donor, 50-cell-per-perturbation subsample ($3.9$M cells) of the
+genome-wide Marson/Pritchard CD4$^+$ T-cell CRISPRi screen at single-cell resolution, \EN{} is
+reproducible within a donor and rises with stimulation (split-half \rho{}$=0.62\to0.75$), is
+donor-specific in the resting state (cross-donor \rho{}$\approx0$) but ports at the stimulated 48\,h
+endpoint where donors converge (\rho{}$=0.49$), and there separates resting-sparing
+inflammatory-program suppressors from damaging and generic perturbations (Cliff's
+$\delta=-0.16$ to $-0.24$). Clustered on its own, \EN{} organizes the target landscape ---
+approved and clinical drug targets concentrate in a translation/ribosome depth cluster in every
+line (per-cluster odds ratios $2.8$--$9.8$) --- and its per-perturbation ordering is reproduced by
+no network statistic (best $|\rho|=0.23$), a genuinely novel descriptor; only for one incremental
+target-class ranking task, atop a STRING prior built from the same modules, does it add no further
+lift. Adaptive-depth halting is thus a reproducible, effect-independent, cell-type-specific property
+of a perturbation's response --- recoverable from single-endpoint data and, clustered alone, a novel
+descriptor that organizes druggability, though not portable across contexts and non-additive with a
+network prior for incremental target ranking.
 \end{abstract}
 
 \section{Introduction}
@@ -812,7 +811,7 @@ Annotation over the 1708-gene union (74 fields) is Claude-generated from public 
 not hand-curated, and every candidate is a hypothesis (``same class as anchor $X$''), not a
 validated target.
 
-\paragraph{The value-add verdict: three of four lines negative.} Adding $|\Delta\EN{}|$ does not
+\paragraph{The incremental verdict: non-additive with the network prior in three of four lines.} Adding $|\Delta\EN{}|$ does not
 improve target-class identification in HepG2 ($\Delta$AUC $=-0.010$, gene-disjoint CV), Jurkat
 ($\Delta$AUC $=-0.002$, $p=0.77$; whereas STRING adds $+0.024$, $p=0.001$), or K562
 ($\Delta$AUC $\approx0$ out-of-sample beyond response and effect). RPE1 is a weak, drug-class-specific
@@ -825,31 +824,41 @@ magnitude ($|\rho(\EN{},\text{effect})|$ is low by design); it simply carries li
 \emph{target-class} information --- response complexity is largely orthogonal to pharmacological
 target class.
 
-This linear negative should be read alongside the positive result of Section~\ref{sec:depthdrug},
-not against it. The value-add test here adds \EN{} \emph{on top of a STRING-network baseline}, and
-STRING is a curated protein-interaction graph that already encodes the functional-module structure
-distinguishing the target classes --- indeed STRING itself contributes the only significant lift
-($\Delta$AUC $+0.024$, $p=0.001$ in Jurkat). Because depth clustering (Section~\ref{sec:depthdrug})
-recovers those same modules directly --- the translation/ribosome stratum, the replication stratum
---- the depth signal and the network prior are \emph{redundant}: once the network is in the
-baseline, \EN{} has no orthogonal target-class information left to add. The correct reading is that
-the depth signature \emph{alone} organizes the druggability/toxicity landscape
-(Section~\ref{sec:depthdrug}); it does not do so \emph{incrementally over a network prior built from
-the same underlying biology}.
+This result is narrow and specific, and it must not be confused with the stronger claim we
+explicitly \emph{reject} in Section~\ref{sec:grn}: that halting depth is a recomputation of network
+wiring. It is not. No model-free graph statistic --- directed-GRN cascade depth, out-degree,
+downstream reach, or undirected PPI degree --- reproduces the per-perturbation ordering of \EN{}
+(best correlate $|\rho|=0.23$, all below a $0.3$ novelty ceiling): \emph{the adaptive signature
+carries per-perturbation information that the network baselines do not}. What the drug test measures
+is different and much more specific --- whether \EN{} sharpens \emph{target-class} assignment for one
+downstream pipeline, on top of a STRING baseline built for exactly that pipeline. Here the answer is
+that the two are largely non-additive \emph{for this one task}: both depth clustering
+(Section~\ref{sec:depthdrug}) and the STRING graph independently surface the same functional strata
+(translation/ribosome, replication), so once the curated network is in the target-class baseline,
+\EN{} adds no further class-label lift in three of four lines. The correct reading is therefore
+two-sided: the depth signature is a genuinely novel per-perturbation descriptor
+(Section~\ref{sec:grn}) and \emph{alone} organizes the druggability landscape
+(Section~\ref{sec:depthdrug}); it simply does not add an \emph{incremental} target-class signal over a
+network prior purpose-built from the same functional modules. Non-redundancy with the network as a
+\emph{descriptor} and non-additivity with it for one \emph{classification task} are different
+statements, and only the latter is negative.
 
 \begin{table}[t]
 \centering
-\caption{ACT value-add for drug-target discovery, per line. Three of four lines are negative;
-RPE1 is a weak, drug-class-specific positive. ``redundant'' = \EN{} separates approved-vs-undrugged
-in-sample but adds nothing out-of-sample; ``irrelevant'' = \EN{} does not separate them at all.}
+\caption{ACT incremental value-add for drug-target-\emph{class} ranking, per line. Three of four
+lines show no lift over a response$+$STRING baseline; RPE1 is a weak, drug-class-specific positive.
+This is task-level non-additivity for one classifier, \emph{not} descriptor-level redundancy ---
+\EN{} remains non-redundant with network topology as a descriptor (Section~\ref{sec:grn}).
+``non-additive'' = \EN{} separates approved-vs-undrugged in-sample but adds nothing out-of-sample
+over the baseline; ``irrelevant'' = \EN{} does not separate them at all.}
 \label{tab:drug}
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Line} & \textbf{Verdict} & \textbf{$\Delta$AUC from $|\Delta\EN{}|$} & \textbf{\# candidates} & \textbf{\# anchors} \\
 \midrule
-HepG2  & redundant  & $-0.010$ (gene-disjoint CV)           & 798 & 70 \\
+HepG2  & non-additive & $-0.010$ (gene-disjoint CV)           & 798 & 70 \\
 Jurkat & irrelevant & $-0.002$ ($p=0.77$); STRING $+0.024$  & 922 & 64 \\
-K562   & redundant  & $\approx 0$ out-of-sample             & 572 & 55 \\
+K562   & non-additive & $\approx 0$ out-of-sample             & 572 & 55 \\
 RPE1   & adds (weak)& $+0.027$ (CI excl.\ 0; LR $p=1.9\!\times\!10^{-7}$) & 886 & 76 \\
 \bottomrule
 \end{tabular}
@@ -909,7 +918,7 @@ non-redundant half of the ``useful'' claim.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.98\textwidth]{{{artifact:art_e3d5d883-a903-485a-99d6-b99ec595a134}}}
+\includegraphics[width=0.98\textwidth]{{{artifact:art_0ccdde47-d001-4998-bf71-c8788ddc4d4f}}}
 \caption{\textbf{Halting depth \EN{} is non-redundant with network topology.} (a)~\EN{} versus
 directed-GRN cascade depth, per line: no relationship (\rho{} from $-0.01$ to $-0.14$). (b)~Absolute
 Spearman \rho{} between \EN{} and each of ten network statistics (directed CollecTRI GRN, left;
@@ -1002,10 +1011,109 @@ well-separated groups (Leiden modularity 0.66), organized by condition-dependent
 island (\EN{}$\approx5.9$ vs 7.2--7.6 elsewhere). Unlike the Replogle lines, where approved and
 clinical drug targets concentrated in the translation/ribosome depth clusters
 (Section~\ref{sec:depthdrug}, OR 2.8--9.8), no CD4 depth cluster is enriched for drug targets
-(all OR 0.6--1.3, no significant $p$): $\approx97\%$ of the screened CD4 genes are essential, so
-there is no essentiality contrast to drive the drug/depth co-localization. The drug/depth pattern
-is itself cell-context-dependent, reinforcing rather than weakening the cell-type-specificity
-conclusion.
+(all OR 0.64--1.25, no significant $p$), with flat druggability and toxicity across depth clusters
+(approved-drug-target fraction 5--8\%, DepMap-essential 1--2\% against a 1.6\% background,
+LoF-intolerant 4--8\%). There is no essentiality or druggability contrast across CD4 depth clusters
+to drive the drug/depth co-localization seen in the Replogle lines; the drug/depth pattern is itself
+cell-context-dependent, reinforcing rather than weakening the cell-type-specificity conclusion.
+
+
+\subsection{Cell-state robustness of the depth signature (exploratory)}
+\label{sec:cellstate}
+
+A natural worry about any per-perturbation signature is that it might be a re-encoding of the
+\emph{cell's} state rather than the perturbation's biology. We tested this directly, as an
+exploratory side-analysis on the four frozen Replogle backbones (no retraining, no temporal labels):
+for each perturbation we conditioned the halting read on the basal cell-cycle phase (G1/S/G2M,
+scored from the control cells) and asked whether \EN{} changes with the starting state. The analysis
+is exploratory and kept separate from the two theses above; we report it because it bears on how the
+signature should be interpreted.
+
+\paragraph{Depth is invariant to basal cell-cycle state.} Across all four lines, the
+per-perturbation \EN{} computed from cells in different basal phases is nearly identical
+(cross-state Spearman \rho{}$=0.996$ (K562), $0.998$ (HepG2), $0.989$ (Jurkat), $0.999$ (RPE1);
+Fig.~\ref{fig:cellstate}, middle column). The real cross-state variation is far below a
+label-permutation null in every line (mean cross-state SD $0.041$ vs null $0.132$ in K562; $0.014$
+vs $0.048$ HepG2; $0.009$ vs $0.027$ Jurkat; $0.008$ vs $0.028$ RPE1; $p(\text{real}\geq\text{null})=1.0$
+throughout), and the signature is reproducible \emph{within} every basal state (within-state
+split-half \rho{}$=0.94$--$0.98$ for \EN{}; Fig.~\ref{fig:cellstate}, right column). Refinement depth
+is therefore a property of the perturbation, stable across the cell-cycle phase the cell happened to
+start in --- a desirable robustness that complements, rather than contradicts, the cell-type
+specificity established above (invariance to \emph{basal phase within a line} is a different axis from
+non-portability \emph{across lines}).
+
+\paragraph{Depth couples to the geometry of the model's internal trajectory.} Reading each of the
+eight layers as a model-implied intermediate response state, deep-\EN{} perturbations trace a
+distinctive path: their intermediate predictions first move \emph{away} from the endpoint (a
+mid-trajectory dip) before the final layer snaps onto the target, whereas shallow-\EN{} perturbations
+approach monotonically (Fig.~\ref{fig:cellstate}, left column). Regressing \EN{} on trajectory
+descriptors (controlling for response magnitude) shows depth tracks the \emph{nonlinear-correction}
+magnitude in every line (standardised $\beta=+0.14$/$+0.28$/$+0.33$/$+0.25$ for
+K562/HepG2/Jurkat/RPE1, all $p\leq10^{-10}$) and the trajectory's \emph{indirectness} rather than its
+raw length. Crucially, late activation of predefined biological programs (cell cycle, DNA damage,
+translation) does \emph{not} explain depth: the corresponding coefficients are small and their signs
+disagree across lines, so this is an absence of a portable program signal, not a hidden one. The
+positive reading is that \EN{} indexes how much the model must \emph{re-orient} its prediction ---
+a correction load --- which is exactly the computational-complexity proxy the theses posit, now
+observed as trajectory geometry rather than as a scalar.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{/Users/yashraj/.claude-science/orgs/b6860f6c-d0fc-4d88-8e06-cf4dd9b075df/artifacts/proj_4374ca6bf18a/80db4ee7-af04-4f63-b16c-761e5dea8a25/v374dd0c9_cellstate_all_lines_figure.png}
+\caption{\textbf{Cell-state robustness of refinement depth (exploratory, four frozen Replogle lines,
+each analysed on its own data).} Rows: K562, HepG2, Jurkat, RPE1. \emph{Left:} model-implied
+trajectory --- deep-\EN{} perturbations (red) dip mid-trajectory then recover; shallow (blue) approach
+monotonically. \emph{Middle:} \EN{} conditioned on G1 vs G2M basal state lies on the diagonal
+(\rho{}$=0.996$--$0.999$): depth is state-invariant. \emph{Right:} within-state split-half
+reproducibility of \EN{}/argmin/$r^\ast$ ($\rho\geq0.83$ in every state and line). Halting is read
+from the frozen backbones with no retraining and no temporal labels.}
+\label{fig:cellstate}
+\end{figure}
+
+
+\subsection{A from-scratch CD4-native attempt: pseudobulk hides the signature}
+\label{sec:cd4native}
+
+Every result above reads halting off a \emph{frozen} backbone. A natural stronger test is to fuse
+the adaptive-depth machinery into the model's own optimisation --- training a CD4-native backbone
+from scratch with the oracle-stopping and joint-calibration losses inside the
+\texttt{training\_step}, so the network learns to predict and to decide its own depth jointly. The
+proper substrate for this is the single-cell screen. The full GWCD4i screen is $\sim$22M cells; our
+frozen single-cell analysis (Section~\ref{sec:cd4}) used a two-donor subsample capped at 50 cells per
+perturbation ($3.9$M cells $\times$ 2001 HVG). Training a backbone from scratch on single cells --- on
+either the full screen or the subsample --- did not reach a stable dataloader throughput in the compute
+available; we therefore ran the experiment on the CD4 \emph{pseudobulk} substrate
+($278{,}684$ profiles, 2001 HVG, three conditions, four donors) as a stopgap. We report the
+outcome as a limitation, not as a clean test of end-to-end halting.
+
+\paragraph{The model fits the response, but the halting depth collapses on pseudobulk.} Training
+converges normally --- the distributional loss falls steadily and the held-out response is fit ---
+but the expected depth \EN{} snaps to a constant once the ponder term activates: \EN{}$\to6.0$ (the
+round budget) with across-perturbation standard deviation $\approx10^{-4}$, i.e.\ the model halts at
+the same round for every perturbation. A head-free diagnostic locates the cause upstream of the halt
+head: the oracle stopping round $r^\ast$ is itself degenerate on this substrate ($r^\ast$ equals the
+maximum round for $100\%$ of held-out perturbations), because the per-round distances form a
+step function (mean magnitude-free distance $1.04\to1.23\to1.20\to1.24\to0.99\to0.03$: rounds 2--5 no
+better than round 1, only the final round converging). With no per-perturbation stopping signal in
+the target, there is nothing for the halt head to learn, and increasing the ponder weight tenfold
+($\gamma:0.01\to0.1$) does not restore spread.
+
+\paragraph{We attribute this to pseudobulk, and we cannot yet claim more.} The collapse is
+\emph{not} evidence that end-to-end halting is intrinsically unidentifiable, and we are careful not
+to read it that way. The single-cell frozen result (Section~\ref{sec:cd4}) recovers a reproducible
+within-donor signature (\rho{}$=0.62$--$0.75$) on exactly this biology, so the signal exists at
+single-cell resolution; what changed here is the substrate. Pseudobulk averaging removes the
+within-population variation the single-cell signature draws on, and our own donor-stability analysis
+already showed raw CD4 pseudobulk response to be donor-unstable by construction
+(Section~\ref{sec:donor}) --- so aggregation is the leading explanation for the lost signal. The
+step-function convergence we observe is a property of \emph{this pseudobulk run} and might or might
+not persist on single-cell data; disentangling the substrate from the training mechanism requires
+the clean control we could not run --- a CD4-native backbone trained from scratch at single-cell
+resolution. Until that control exists, the honest statement is narrow: \textbf{on aggregated
+pseudobulk the from-scratch fused model fits the response but yields no usable depth signature,
+most plausibly because pseudobulk hides it.} Completing the single-cell from-scratch training is the
+first item of future work.
+
 
 \section{Discussion}
 
@@ -1037,9 +1145,19 @@ Depth is a context-specific property of the perturbation, reproducible within a 
 shared between them; the three-tier decay $0.93\!\rightarrow\!0.29\!\rightarrow\!0.06$ (head-seed
 $\rightarrow$ from-scratch backbone-seed $\rightarrow$ donor) locates the residual model-fit
 dependence in the from-scratch retrain, not in the deployed fixed-backbone regime.
-\item \textbf{The signature does not sharpen drug-target discovery.} In three of four lines,
-\EN{} adds nothing to response$+$STRING similarity for target-class identification; response
-complexity is largely orthogonal to pharmacological target class.
+\item \textbf{The depth signature is a novel descriptor that organizes druggability; it is not an
+incremental classifier over a purpose-built network prior.} Two facts must be held together.
+\emph{First, depth is non-redundant with network topology} (Section~\ref{sec:grn}): no model-free
+graph statistic --- GRN cascade depth, out-degree, downstream reach, PPI degree --- reproduces the
+per-perturbation ordering of \EN{} (best $|\rho|=0.23$, below the $0.3$ novelty ceiling), so the
+adaptive signature genuinely captures what the simple baselines miss. \emph{Second}, clustering
+perturbations on that signature recovers functional gene classes in which approved/clinical drug
+targets concentrate (translation/ribosome cluster, odds ratios $2.8$--$9.8$, every line;
+Section~\ref{sec:depthdrug}) --- a genuine positive. The only negative is narrow: for one downstream
+target-\emph{class} ranking task, added on top of a STRING baseline built from the same functional
+modules, \EN{} gives no further class-label lift in three of four lines (Section~\ref{sec:drug}).
+Non-redundancy as a descriptor and non-additivity for that one classification task are different
+claims; only the latter is negative, and it does not diminish the signature's novelty.
 \item \textbf{The signature is non-redundant with network topology.} No model-free graph statistic
 --- directed-GRN cascade depth, out-degree, downstream reach, or undirected PPI degree ---
 reproduces the per-perturbation ordering of \EN{} (best correlate $|\rho|=0.23$, all below a $0.3$
@@ -1093,9 +1211,12 @@ the halting mechanism.
 Adaptive-depth halting \EN{} is a reproducible (within-cell-type split-half \rho{}$=0.80$, below
 the \rho{}$\approx0.97$ effect-size ceiling), effect-size-independent, cell-type-specific property
 of a perturbation's response --- recoverable from single-endpoint Perturb-seq --- but it is
-\emph{not} portable across cell types (\rho{}$=0.14$) or donors (\rho{}$=0.06$), and it does
-\emph{not} sharpen drug-target-class identification beyond response and network similarity (three
-of four lines negative). Its sign relative to response magnitude is set by the cellular context.
+\emph{not} portable across cell types (\rho{}$=0.14$) or donors (\rho{}$=0.06$). Clustered on its own, the depth signature organizes
+druggability --- approved/clinical targets concentrate in the translation/ribosome cluster in every
+line --- and is non-redundant with network topology as a descriptor (Section~\ref{sec:grn}); it is
+only \emph{non-additive} with a STRING baseline for incremental target-class ranking (no lift in
+three of four lines). Its sign relative to response magnitude is
+set by the cellular context.
 Learned per-perturbation halting is unidentifiable from single endpoints without oracle
 scaffolding; once that scaffolding is in place on a frozen foundation model, the depth signature
 is real, but its reach is bounded to the model and context that produced it. The reproducibility,

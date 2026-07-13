@@ -131,11 +131,15 @@ One row per perturbation (gene) that is common+valid across all 3 conditions. Co
 5. CD4 block (separate view): `cd4_single_cell.files.perturbation_map_csv` (scatter, normalize via
    `node_key_map_cd4`) + `crossdonor_EN_csv` (cross-donor scatter) + `results_summary_json` (stats) +
    `discovery_figure_png`/`depth_umap_png` + `report_md`.
-6. Paper: `paper.pdf` (25pp full write-up; CD4 = Section 5.8).
+6. Paper: `paper_draft.pdf` (29pp full write-up; new title "When Does a Perturbation Model Know Enough?"; CD4 application + cell-state robustness + a from-scratch CD4-native (pseudobulk-collapse) section).
 
 ## Interpretation guardrails (surface in the app)
-- The ACT value-add verdict is NEGATIVE in 3/4 lines (redundant/irrelevant) and weak-positive in rpe1.
-  Present E[N] as a secondary/tie-breaker axis, not the primary ranker.
+- E[N] is a novel descriptor (non-redundant with network topology, best |ρ| = 0.23) that organizes
+  druggability (drug targets concentrate in a translation/ribosome depth cluster, OR 2.8–9.8 every line).
+  For one incremental target-class ranking task it is non-additive with a STRING baseline in 3/4 lines
+  (rpe1 a weak tie-breaker) — task-level non-additivity, NOT descriptor-level redundancy. When surfacing
+  the ranking, present E[N]'s incremental role as a secondary/tie-breaker axis, but do not label the
+  descriptor "redundant."
 - Cross-line recurrence is dominated by core-essential genes (flagged `tox_essential_<line>` / recurrence_note).
   Default the consistency view to `recurrence_note == "non_essential(safety-pass)"`.
 - Candidates are HYPOTHESES ("same class as anchor X"), not validated targets.

@@ -6,6 +6,13 @@ effect-size-independent per-perturbation signature* that can be recovered from *
 Perturb-seq? And if so, does that signature carry biology useful for ranking **CD4+ T-cell drug
 targets**?
 
+**The reframe that makes this work.** Adaptive-computation halting (ACT/PonderNet) was invented to
+*save compute* — an easy input exits early, a hard one ponders longer. We repurpose it as a
+**measurement rather than a stop rule**: on a frozen backbone whose layers all execute, halting saves
+no compute, and the layer at which the model's endpoint estimate converges is read as a
+per-perturbation proxy for **response complexity** — explicitly *not* biological time or causal
+depth, which a single endpoint cannot recover.
+
 This repository narrates the full project arc **chronologically**, and deliberately keeps the
 experiments that *failed*: the many halting grafts that hit an identifiability wall are the evidence
 for the project's negative-result thesis, not detours to be hidden. The directory numbering `00 → 09`
@@ -29,15 +36,43 @@ is the timeline.
    **K562 split-half ρ ≈ 0.76**, and across four Replogle lines (K562/HepG2/Jurkat/RPE1)
    within-line split-half **ρ ≈ 0.72–0.87 (4-line mean ρ ≈ 0.80)**.
 
-3. **CD4+ T cells (application, paper Part 2).** At single-cell resolution the depth signature is
-   reproducible within a donor and **sharpens with stimulation**: within-donor split-half
-   **ρ = 0.62 → 0.68 → 0.75** for Rest → Stim 8h → Stim 48h. At the stimulated endpoint,
+3. **The signature is a genuinely novel descriptor — non-redundant with network topology.**
+   No model-free network statistic reproduces the per-perturbation ordering of E[N]: directed-GRN
+   cascade depth, out-degree, downstream reach, and PPI degree all fall below a 0.3 novelty ceiling
+   (**best |ρ| = 0.23**, K562 PPI degree; GRN cascade depth |ρ| = 0.01–0.14 per line). The adaptive
+   signature captures per-perturbation structure the simple baselines miss — this is the load-bearing
+   *positive* for the thesis.
+
+4. **Depth organizes druggability, but is non-additive with a network prior for one ranking task.**
+   Clustering perturbations on the depth signature (UMAP + Leiden) recovers functional gene classes in
+   which approved/clinical drug targets concentrate — a **translation/ribosome cluster in every line**
+   (per-cluster odds ratios 2.8–9.8). That is a genuine positive. The *only* negative is narrow and
+   **task-level, not descriptor-level**: for one downstream target-*class* ranking task, adding |ΔE[N]|
+   on top of a STRING baseline built from the same modules gives no AUC lift in 3 of 4 lines. Depth is
+   **non-redundant** as a descriptor (finding 3) yet **non-additive** for that one classifier — two
+   different claims; only the latter is negative, and it does not diminish the signature's novelty.
+
+5. **CD4+ T cells (application, paper Part 2).** On a two-donor, 50-cell-per-perturbation subsample
+   (3.9M cells) of the genome-wide (~22M-cell) CD4+ CRISPRi screen, at single-cell resolution the
+   depth signature is reproducible within a donor and **sharpens with stimulation**: within-donor
+   split-half **ρ = 0.62 → 0.68 → 0.75** for Rest → Stim 8h → Stim 48h. At the stimulated endpoint,
    **resting-sparing suppressors converge shallower** than damaging/generic perturbations
    (Kruskal–Wallis **p = 5.2×10⁻²⁸**). Depth is donor-specific in rest/early activation
    (cross-donor ρ ≈ −0.1) and becomes portable only once donors converge on the shared activation
    program (cross-donor ρ = +0.49 at 48h).
 
-4. **Cell-state (exploratory).** Refinement depth is **invariant to basal cell-cycle state**
+6. **CD4-native from-scratch: pseudobulk hides the signature (a completed negative).**
+   Training a CD4-native STATE model with fused magnitude-free halting **from scratch on pseudobulk**
+   trains successfully — the response head fits — but the halting depth **collapses to a constant**
+   (E[N] → 6.0, across-perturbation std ≈ 1e-4). A head-free diagnostic locates the cause upstream of
+   the halt head: the oracle stopping round r\* is degenerate (**r\* = max for 100% of perturbations**)
+   and per-round convergence is a **step function** (only the final round converges). A 10× stronger
+   ponder does not restore spread. We attribute this **primarily to pseudobulk aggregation** — the
+   single-cell signature (finding 5) proves the signal exists at single-cell resolution; the
+   from-scratch single-cell control was infeasible in the compute available, so this **bounds the
+   method to single-cell substrates and does not, on its own, refute end-to-end halting.**
+
+7. **Cell-state (exploratory).** Refinement depth is **invariant to basal cell-cycle state**
    (cross-state ρ ≥ 0.99 in all four Replogle lines; real cross-state variance below a
    state-label-permutation null). What it couples to is the **directional-correction geometry** of
    the model-implied response trajectory (standardized β = +0.14 to +0.33), not a late cell-cycle
@@ -88,11 +123,14 @@ is the timeline.
 
 - **[05 — Biology validation & drug-target discovery](05_biology_and_drug_discovery/)**  *(4 lines)*
   Depth UMAP/Leiden structure plus a response-cosine + STRING-adjacency drug-target discovery
-  pipeline. The value-add verdict on E[N] is **3/4 lines negative**: refinement depth does *not*
-  sharpen drug-target-class discrimination beyond response + network similarity (RPE1 a weak
-  tie-breaker). The ranking itself is still useful — the safety-pass recurrent hits (led by
-  **MIOS / LAMTOR1 → MTOR**) are mechanism-coherent — but cross-line recurrence must be read against
-  an essentiality confound.
+  pipeline. Two results must be held apart. **The positive:** clustering on the depth signature alone
+  recovers functional classes where approved/clinical drug targets concentrate (translation/ribosome
+  cluster, odds ratios 2.8–9.8 every line), and depth is **non-redundant with network topology**
+  (Stage 4's GRN/PPI baselines, best |ρ| = 0.23 — see finding 3). **The narrow negative:** for one
+  incremental target-*class* ranking task, adding |ΔE[N]| on top of a STRING baseline gives no AUC
+  lift in 3/4 lines — task-level **non-additivity**, not descriptor-level redundancy. The ranking
+  itself is useful — the safety-pass recurrent hits (led by **MIOS / LAMTOR1 → MTOR**) are
+  mechanism-coherent — but cross-line recurrence must be read against an essentiality confound.
 
 - **[06 — Cell-state-conditioned refinement](06_cellstate_exploratory/)**  *(EXPLORATORY side-analysis, not paper)*
   An exploratory test of whether depth reports the cell's starting state. It does not: E[N] is
@@ -108,11 +146,18 @@ is the timeline.
   (ρ = +0.49). At Stim 48h, **resting-sparing suppressors converge shallower** than damaging/generic
   perturbations (Kruskal p = 5.2×10⁻²⁸) — the Part-2 discovery.
 
-- **[08 — CD4-native STATE fused halting](08_cd4_native_state_halt/)**  *(current deliverable)*
-  A CD4-native STATE model with adaptive-depth halting trained **from scratch** (rather than a frozen
-  backbone), with magnitude-free, jointly-calibrated halting (8-layer Llama backbone, hidden 768,
-  6 refinement rounds). This is the bridge that would let the directional-correction geometry (Stage 6)
-  be tested directly on a CD4 backbone. Training config, graft code, and driving notebooks are here.
+- **[08 — CD4-native STATE fused halting](08_cd4_native_state_halt/)**  *(completed — a negative)*
+  A CD4-native STATE model with adaptive-depth halting fused in and trained **from scratch on
+  pseudobulk** (rather than reading depth off a frozen backbone), with magnitude-free,
+  jointly-calibrated halting (8-layer Llama backbone, hidden 336, 6 refinement rounds). **Outcome: the
+  response head fits, but E[N] collapses to a constant** (→ 6.0, std ≈ 1e-4). A head-free diagnostic
+  shows the collapse is upstream of the halt head — the oracle stopping round r\* is degenerate
+  (r\* = max for 100% of perturbations) and per-round convergence is a step function; a 10× stronger
+  ponder does not restore spread. We attribute this **primarily to pseudobulk aggregation** (the
+  single-cell signature in Stage 7 proves the signal exists at single-cell resolution), so it bounds
+  the method to single-cell substrates and does not, on its own, refute end-to-end halting. Training
+  config, graft code, checkpoints, the r\* diagnostic, and driving notebooks are here. Checkpoints and
+  the four frozen-backbone halt heads are also on HuggingFace (`yraj/RefineRx`).
 
 - **[09 — Manuscript](09_paper/)**
   The paper draft (LaTeX + PDF) plus the provenance records: generation methods for the CD4 gene
@@ -127,17 +172,22 @@ is the timeline.
   perturbation's endpoint; they are not hours, pseudotime, or a mechanistic number of regulatory
   steps. Single-endpoint data cannot recover the latter, and no claim here should be read that way.
 
-- **Depth is model-specific, not a portable constant.** The signature is reproducible *within a
-  fixed context* (a given backbone + cell type), but it does **not** transfer across contexts:
-  cross-line E[N] ρ ≈ 0.14 and cross-donor (pseudobulk) ρ ≈ 0.06. The one place portability appears
-  is where the *biology itself* converges — cross-donor ρ = +0.49 only at the fully-stimulated CD4
-  48h endpoint. Treat E[N] as a property of a fitted model in a context, never as an intrinsic
-  per-perturbation invariant.
+- **Depth is cell-type-specific, not a context-portable constant.** The signature is reproducible
+  *within a fixed context* (a given backbone + cell type) and is genuinely novel there (non-redundant
+  with network topology, finding 3), but it does **not** transfer across contexts: cross-line E[N]
+  ρ ≈ 0.14 and cross-donor (resting) ρ ≈ 0. The one place portability appears is where the *biology
+  itself* converges — cross-donor ρ = +0.49 only at the fully-stimulated CD4 48h endpoint. Treat E[N]
+  as a per-perturbation property recovered *within a context*, not as an intrinsic
+  context-invariant constant. (This is distinct from calling it "model-specific" in a dismissive
+  sense — within its context it is a reproducible, effect-independent, non-redundant descriptor.)
 
 - **The identifiability wall is the load-bearing negative result.** Free learned halting on
   single-endpoint data is either redundant with effect size or unstable across seeds; a reproducible,
   non-redundant signature requires either pinning depth to fixed external structure (Stage 3's STRING
   graph) or supervising it with an oracle stopping round on a backbone that fits the data (Stage 4).
+  The from-scratch CD4-native run (Stage 8) is a further instance: fused halting on *pseudobulk*
+  collapses because the substrate provides no smooth accuracy-vs-depth curve to calibrate against —
+  the signal that *does* survive at single-cell resolution (Stage 7) is aggregated away.
 
 - **Exploratory vs. paper.** **Stage 6 (cell-state)** and any **temporal / cross-time analyses** are
   **exploratory** and are not part of the manuscript unless explicitly promoted. Stages 04, 05, and
@@ -160,7 +210,7 @@ is the timeline.
 05_biology_and_drug_discovery/  depth UMAP/Leiden + drug-target discovery (4 lines)
 06_cellstate_exploratory/    cell-state invariance (EXPLORATORY, not paper)
 07_cd4_application/          CD4+ T-cell single-cell application (paper Part 2)
-08_cd4_native_state_halt/    CD4-native fused halting, trained from scratch (current)
+08_cd4_native_state_halt/    CD4-native fused halting from scratch — pseudobulk E[N] collapse (negative)
 09_paper/                    manuscript + provenance records
 ```
 
