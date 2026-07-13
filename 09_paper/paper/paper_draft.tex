@@ -23,8 +23,7 @@
 \renewcommand{\rho}{\ensuremath{\mathrho}}
 \renewcommand{\arraystretch}{1.15}
 
-\title{\textbf{When Does a Perturbation Model Know Enough?\\
-Learned Halting as a Biological Model Readout}}
+\title{\textbf{When Does a Perturbation Model Know Enough?}}
 
 \author{Yash Raj}
 \date{}
@@ -87,7 +86,10 @@ not? We operationalise ``amount of refinement'' as the halting behaviour of an a
 model in the sense of Adaptive Computation Time (ACT)~\cite{graves2016} and
 PonderNet~\cite{banino2021}: a model that can repeat a refinement step a variable number of
 times, with a learned head deciding when to stop, yields a per-perturbation expected halting
-depth \EN{}.
+depth \EN{}. This is the sense in which we ask \emph{when a perturbation model knows enough}: \EN{} is
+the refinement layer at which the model stops improving its endpoint estimate for a given
+perturbation --- and the paper's answer is that this convergence point is a real, per-perturbation,
+context-specific property, but one that does not transfer across contexts.
 
 \paragraph{What the signature is, and is not.} We are deliberate about interpretation. Halting
 depth is a \emph{computational proxy for response complexity} --- the number of refinement rounds
@@ -133,8 +135,11 @@ three-tier decay from same-model to cross-context reproducibility
 knockdown strength and target abundance, relates to response complexity with a
 \emph{cell-type-specific sign}, and is effect-size-independent once \#DE and cell count are
 controlled (Section~\ref{sec:biology}).
-\item A negative application result: adaptive-depth halting does not sharpen drug-target-class
-identification beyond response and STRING-network similarity (three of four lines negative;
+\item A two-sided application result: clustered on its own, \EN{} organizes druggability --- approved
+and clinical drug targets concentrate in a translation/ribosome depth cluster in every line (odds
+ratios $2.8$--$9.8$) --- and the descriptor is non-redundant with network topology (best $|\rho|=0.23$;
+Section~\ref{sec:grn}). The only negative is narrow: for one incremental target-\emph{class} ranking
+task it is non-additive with a STRING prior built from the same modules (three of four lines;
 Section~\ref{sec:drug}).
 \item A second application to primary human CD4$^+$ T-cell CRISPRi at single-cell resolution
 (Section~\ref{sec:cd4}): the depth signature is reproducible within a donor (split-half
@@ -146,9 +151,11 @@ resting-sparing inflammatory-program suppressors from damaging and generic pertu
 
 The overall verdict is a triad of positive properties --- reproducible, effect-independent,
 cell-type-specific --- delimited by a set of equally important negatives: learned halting is
-unidentifiable from single endpoints without oracle scaffolding, the signature does not port
-across contexts, and it does not help prioritise drug targets. We regard the negatives as the
-core scientific contribution.
+unidentifiable from single endpoints without oracle scaffolding, and the signature does not port
+across contexts. On its own it organizes druggability and is a non-redundant descriptor of the
+response; its one negative for target prioritisation is narrow --- it is non-additive with a network
+prior for incremental target-class ranking, not uninformative. We regard the identifiability and
+non-portability negatives as the core scientific contribution.
 
 \section{Related work: a graftability catalog of perturbation models}
 \label{sec:related}
@@ -1157,18 +1164,16 @@ Section~\ref{sec:depthdrug}) --- a genuine positive. The only negative is narrow
 target-\emph{class} ranking task, added on top of a STRING baseline built from the same functional
 modules, \EN{} gives no further class-label lift in three of four lines (Section~\ref{sec:drug}).
 Non-redundancy as a descriptor and non-additivity for that one classification task are different
-claims; only the latter is negative, and it does not diminish the signature's novelty.
-\item \textbf{The signature is non-redundant with network topology.} No model-free graph statistic
---- directed-GRN cascade depth, out-degree, downstream reach, or undirected PPI degree ---
-reproduces the per-perturbation ordering of \EN{} (best correlate $|\rho|=0.23$, all below a $0.3$
-novelty ceiling; Section~\ref{sec:grn}). Halting depth is therefore not an expensive recomputation
-of wiring the field already has: it is a genuinely new per-perturbation descriptor, even though it
-does not port across contexts.
+claims; only the latter is negative, and it does not diminish the signature's novelty. Halting depth
+is therefore not an expensive recomputation of wiring the field already has --- it is a genuinely new
+per-perturbation descriptor, even though it does not port across contexts.
 \end{itemize}
-The drug-discovery verdict tallies four independent tests, of which three are negative and the
-fourth (RPE1) is a weak, drug-class-specific tie-breaker --- so the overall application verdict is
-negative. Under the benchmark-critique framing of this subfield, a clean negative that survives
-two annotation versions and gene-disjoint cross-validation is a result worth reporting.
+The \emph{incremental} target-class ranking verdict tallies four independent tests, of which three
+are negative and the fourth (RPE1) is a weak, drug-class-specific tie-breaker --- so the incremental
+value-add over a purpose-built network prior is negative, even though the descriptor-level
+druggability organization (the translation/ribosome enrichment) is positive and non-redundant. Under
+the benchmark-critique framing of this subfield, a clean incremental negative that survives two
+annotation versions and gene-disjoint cross-validation is a result worth reporting.
 
 \paragraph{Why a frozen foundation model, and what that costs.} The identifiability wall fell only
 when the predictor was a large model pretrained on a genome-wide perturbation atlas, whose

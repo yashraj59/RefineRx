@@ -1,7 +1,7 @@
 # Stage 9 — Manuscript
 
-The write-up (29 pages), titled **"When Does a Perturbation Model Know Enough? Learned Halting as a
-Biological Model Readout."** `paper/` holds the manuscript draft in both LaTeX source
+The write-up (28 pages), titled **"When Does a Perturbation Model Know Enough?"** `paper/` holds the
+manuscript draft in both LaTeX source
 (`paper_draft.tex`) and rendered PDF (`paper_draft.pdf`), covering Part 1 (the identifiability wall and
 the STATE oracle-ACT signature across the Replogle lines, including the GRN non-redundancy result and
 the drug descriptor-novelty vs task-non-additivity distinction) and Part 2 (the CD4+ T-cell

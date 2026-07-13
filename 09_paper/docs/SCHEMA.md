@@ -131,7 +131,7 @@ One row per perturbation (gene) that is common+valid across all 3 conditions. Co
 5. CD4 block (separate view): `cd4_single_cell.files.perturbation_map_csv` (scatter, normalize via
    `node_key_map_cd4`) + `crossdonor_EN_csv` (cross-donor scatter) + `results_summary_json` (stats) +
    `discovery_figure_png`/`depth_umap_png` + `report_md`.
-6. Paper: `paper_draft.pdf` (29pp full write-up; new title "When Does a Perturbation Model Know Enough?"; CD4 application + cell-state robustness + a from-scratch CD4-native (pseudobulk-collapse) section).
+6. Paper: `paper_draft.pdf` (28pp full write-up; new title "When Does a Perturbation Model Know Enough?"; CD4 application + cell-state robustness + a from-scratch CD4-native (pseudobulk-collapse) section).
 
 ## Interpretation guardrails (surface in the app)
 - E[N] is a novel descriptor (non-redundant with network topology, best |ρ| = 0.23) that organizes

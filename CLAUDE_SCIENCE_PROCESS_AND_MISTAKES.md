@@ -1,7 +1,7 @@
 # How Claude Science Was Used — and Where It Went Wrong
 
 *A process retrospective for the RefineRx / adaptive-depth halting project*
-**Author:** Yash Raj · **Project:** "When Does a Perturbation Model Know Enough? Learned Halting as a Biological Model Readout"
+**Author:** Yash Raj · **Project:** "When Does a Perturbation Model Know Enough?"
 
 ---
 
