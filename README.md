@@ -131,6 +131,10 @@ is the timeline.
   lift in 3/4 lines — task-level **non-additivity**, not descriptor-level redundancy. The ranking
   itself is useful — the safety-pass recurrent hits (led by **MIOS / LAMTOR1 → MTOR**) are
   mechanism-coherent — but cross-line recurrence must be read against an essentiality confound.
+  The drug/toxicity annotation feeding this stage was collected with `autocollect-bio` (per-value
+  source tags; `NOT_FOUND` vs `NOT_FETCHED` kept distinct) and merges the author's standalone CD4
+  perturbed-gene annotation dataset, released separately at
+  [tcell-perturbed-gene-annotation](https://github.com/yashraj59/tcell-perturbed-gene-annotation).
 
 - **[06 — Cell-state-conditioned refinement](06_cellstate_exploratory/)**  *(EXPLORATORY side-analysis, not paper)*
   An exploratory test of whether depth reports the cell's starting state. It does not: E[N] is
@@ -162,6 +166,23 @@ is the timeline.
 - **[09 — Manuscript](09_paper/)**
   The paper draft (LaTeX + PDF) plus the provenance records: generation methods for the CD4 gene
   annotation deliverables and the annotation schema.
+
+### Data & provenance — the annotation layer
+
+The drug- and toxicity-target annotation used across the discovery stages was built with a
+**zero-fabrication discipline**: every value in every table is paired with the named source it came
+from and the date it was retrieved, and the token `NOT_FOUND` (queried, genuinely absent) is kept
+strictly separate from `NOT_FETCHED` (deliberately not queried) — no cell is ever a guessed or
+model-derived value. Fabrication is *structurally impossible* rather than merely discouraged. Sources:
+**Open Targets, ChEMBL, gnomAD, DepMap, Pharos, STRING, FDA**.
+
+The headline annotation product — the **CD4+ T-cell perturbed-gene table (11,526 genes**, with a
+**~1,796-gene** druggable/tractable deep subset inside it) — is released as a **standalone dataset
+repo**: **https://github.com/yashraj59/tcell-perturbed-gene-annotation**. (A separate, smaller
+1,708-gene Replogle cell-line drug-discovery union, 74 fields, lives inside Stage 05 and is not that
+repo.) Both layers were collected the same way, using
+[`autocollect-bio`](skills/autocollect-bio/) — a Claude Science skill the author developed and
+included in this repo (under `skills/`) for reproducibility of the annotation layer.
 
 ---
 
