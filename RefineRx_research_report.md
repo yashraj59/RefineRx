@@ -46,6 +46,8 @@ Where a design choice is a direct response to a negative result, we say so; the 
 
 **Perturbation-response models.** A large and fast-moving family of models predicts single-cell perturbation responses, spanning foundation/adaptation models, knowledge-graph and gene-regulatory-network models, chemical and drug models, optimal-transport and flow/diffusion models, and transfer/spatial models. A survey of 43 such models from 2024–2026 (Figure 1) shows that most are single-shot: they map a perturbation to a predicted endpoint in one pass and would require architectural changes to host a halting loop. Eleven expose a semantically meaningful iterative core (rated HIGH or MEDIUM-HIGH graftability) — including ARC Institute's STATE, scDiff, TxPert, CellFlow, GEARS, PDGrapher, and AIDO.Cell prediction heads. We use STATE (the ST-SE-Replogle variant) as the frozen backbone because its iterative structure is meaningful, it is well fitted, and it is deployed frozen — the regime in which our reframe is well posed.
 
+**Layer depth in single-cell foundation models.** Reading intermediate rather than final layers is an active question for single-cell foundation models. Concurrent work shows that the most informative layer is task- and context-dependent, shifting by up to 96% across T-cell activation states for perturbation modelling, with first-layer embeddings sometimes beating all deeper layers in quiescent cells [16]. Our aim differs in kind: rather than selecting one optimal extraction layer per task by sweeping downstream performance, we derive a per-perturbation *learned* halting depth and validate the depth signal's own properties — reproducibility, effect-independence, and portability. Where the two meet is independent corroboration: our finding that halting depth ports only where cell states converge (§5.8) recovers their context-dependence result from a different methodological angle.
+
 ![43 perturbation models (2024–2026) by family track and ACT-graftability; 11 of 43 expose a graftable iterative core (HIGH / MEDIUM–HIGH).](figures/fig01_graftability_survey.png)
 
 ***Figure 1.** 43 perturbation models (2024–2026) by family track and ACT-graftability; 11 of 43 expose a graftable iterative core (HIGH / MEDIUM–HIGH).*
@@ -219,7 +221,7 @@ We applied STATE oracle-ACT to a two-donor, single-cell subsample of the genome-
 - **Donor-specific until the biology converges:** cross-donor agreement is ≈ 0 in the resting state (ρ = −0.11, n = 5745) but reaches ρ = 0.49 at the fully stimulated 48h endpoint (n = 5840), exactly where cells from different donors converge onto a shared activation program.
 - **Depth separates phenotype categories at 48h** (Kruskal–Wallis p = 5 × 10⁻²⁸): resting-sparing inflammatory-program suppressors converge faster — lower E[N] — than damaging (Cliff's δ = −0.16) and generic (δ = −0.24) perturbations.
 
-This mirrors the cross-line result of §5.2: the signature ports where, and only where, the biology converges.
+This mirrors the cross-line result of §5.2: the signature ports where, and only where, the biology converges — and it independently reproduces concurrent evidence that the informative layer of a single-cell foundation model is set by cellular context [16].
 
 **A cell-context-dependent drug negative.** Clustering the 12-feature CD4 signature (E[N], halt confidence, nonlinear/predicted-error × 3 conditions) yields nine well-separated groups (Leiden modularity 0.66), organized by condition-dependent refinement *dynamics* rather than static pathway family; one cluster is a distinct shallow/fast-converging island (E[N] ≈ 5.9 vs 7.2–7.6 elsewhere). Unlike the Replogle lines, where approved and clinical drug targets concentrated in the translation/ribosome cluster (§5.4, OR 2.8–9.8), no CD4 depth cluster is enriched for drug targets (all OR 0.64–1.25, no significant p), with flat druggability and toxicity across depth clusters (approved-drug-target fraction 5–8%, DepMap-essential 1–2% against a 1.6% background, LoF-intolerant 4–8%). There is no essentiality or druggability contrast across CD4 depth clusters to drive the drug/depth co-localization seen in the Replogle lines; the drug/depth pattern is itself cell-context-dependent, reinforcing rather than weakening the cell-type-specificity conclusion.
 
@@ -273,7 +275,7 @@ Methodologically, this paper's contribution is a reframing: adaptive-depth halti
 
 ## References
 
-*(Numbered citations [1]–[15] in the body correspond to the existing bibliography; align numbering with the source `.bib`. Key sources are listed here.)*
+*(Numbered citations [1]–[15] in the body correspond to the existing bibliography; align numbering with the source `.bib`. Key sources are listed here with [16] the concurrent single-cell-layer-depth work.)*
 
 - **[1]** A. Graves. *Adaptive Computation Time for Recurrent Neural Networks.* arXiv:1603.08983, 2016.
 - **[2]** A. Banino, J. Balaguer, C. Blundell. *PonderNet: Learning to Ponder.* ICML Workshop, 2021.
@@ -284,3 +286,4 @@ Methodologically, this paper's contribution is a reframing: adaptive-depth halti
 - Marson / Pritchard **GWCD4i** genome-wide CD4+ T-cell CRISPRi Perturb-seq screen.
 - STRING protein–protein interaction database; **CollecTRI** TF→target regulatory network.
 - Open Targets, ChEMBL, DepMap, Pharos, gnomAD, FDA — drug/toxicity/essentiality annotation sources (compiled with provenance on every value over the 1,708-gene target union).
+- **[16]** V. Y. Civale, R. Semeraro, A. D. Bagdanov, A. Magi. *Intermediate Layers Encode Optimal Biological Representations in Single-Cell Foundation Models.* arXiv:2604.14838, 2026.
