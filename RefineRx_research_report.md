@@ -1,4 +1,4 @@
-# When Does a Perturbation Model Know Enough? Learned Halting as a Biological Model Readout
+# When Does a Perturbation Model Know Enough?
 
 **Yash Raj**
 *Built with Claude: Life Sciences 2026 — Researcher Track*
