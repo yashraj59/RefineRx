@@ -181,7 +181,7 @@ The headline annotation product — the **CD4+ T-cell perturbed-gene table (11,5
 repo**: **https://github.com/yashraj59/tcell-perturbed-gene-annotation**. (A separate, smaller
 1,708-gene Replogle cell-line drug-discovery union, 74 fields, lives inside Stage 05 and is not that
 repo.) Both layers were collected the same way, using
-[`autocollect-bio`](skills/autocollect-bio/) — a Claude Science skill the author developed and
+[`autocollect-bio`](skills/autocollect-bio/) — a skill the author created using Claude Science, and
 included in this repo (under `skills/`) for reproducibility of the annotation layer.
 
 ---

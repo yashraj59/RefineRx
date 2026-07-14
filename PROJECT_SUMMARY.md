@@ -5,7 +5,7 @@
 **Code:** github.com/yashraj59/RefineRx · **Models:** huggingface.co/yraj/RefineRx
 **Annotation:** the 11,526-gene CD4+ T-cell perturbed-gene table (with a ~1,796-gene druggable/tractable
 deep subset) is released as a standalone dataset — github.com/yashraj59/tcell-perturbed-gene-annotation —
-collected with `autocollect-bio`, the author's zero-fabrication Claude Science annotation skill (every
+collected with `autocollect-bio`, a zero-fabrication annotation skill the author created using Claude Science (every
 value paired with its source and recorded date; `NOT_FOUND` kept strictly separate from a guess).
 
 ---

@@ -46,7 +46,9 @@ Where a design choice is a direct response to a negative result, we say so; the 
 
 **Perturbation-response models.** A large and fast-moving family of models predicts single-cell perturbation responses, spanning foundation/adaptation models, knowledge-graph and gene-regulatory-network models, chemical and drug models, optimal-transport and flow/diffusion models, and transfer/spatial models. A survey of 43 such models from 2024–2026 (Figure 1) shows that most are single-shot: they map a perturbation to a predicted endpoint in one pass and would require architectural changes to host a halting loop. Eleven expose a semantically meaningful iterative core (rated HIGH or MEDIUM-HIGH graftability) — including ARC Institute's STATE, scDiff, TxPert, CellFlow, GEARS, PDGrapher, and AIDO.Cell prediction heads. We use STATE (the ST-SE-Replogle variant) as the frozen backbone because its iterative structure is meaningful, it is well fitted, and it is deployed frozen — the regime in which our reframe is well posed.
 
-**Layer depth in single-cell foundation models.** Reading intermediate rather than final layers is an active question for single-cell foundation models. Concurrent work shows that the most informative layer is task- and context-dependent, shifting by up to 96% across T-cell activation states for perturbation modelling, with first-layer embeddings sometimes beating all deeper layers in quiescent cells [16]. Our aim differs in kind: rather than selecting one optimal extraction layer per task by sweeping downstream performance, we derive a per-perturbation *learned* halting depth and validate the depth signal's own properties — reproducibility, effect-independence, and portability. Where the two meet is independent corroboration: our finding that halting depth ports only where cell states converge (§5.8) recovers their context-dependence result from a different methodological angle.
+![43 perturbation models (2024–2026) by family track and ACT-graftability; 11 of 43 expose a graftable iterative core (HIGH / MEDIUM–HIGH).](figures/fig01_graftability_survey.png)
+
+***Figure 1.** 43 perturbation models (2024–2026) by family track and ACT-graftability; 11 of 43 expose a graftable iterative core (HIGH / MEDIUM–HIGH).*
 
 ---
 
@@ -73,6 +75,10 @@ The two desiderata therefore pull against each other for any model whose depth i
 We read each of the eight layers of the frozen STATE backbone through the same frozen decoder — a logit-lens readout of the residual stream — and measure the per-layer direction error D_k = 1 − cos(û_k, u) between the layer-k endpoint estimate û_k and the true response direction u. Over 924 K562 perturbations (Figure 2a), the estimate refines monotonically through the early stack (D_k falls from 0.909 at layer 1 to 0.881 at layer 6), then the final two layers move the readout *away* from the response direction as the backbone specialises for its own pretraining objective. Refinement is real but not monotone across the full stack.
 
 Critically, the layer of closest approach — arg min_k D_k — is per-perturbation and spans all eight layers (Figure 2b). E[N] therefore draws on the full range of the stack rather than collapsing to a single global round. This per-layer convergence depth is a property of the frozen model, not a learned decision; we report it as an independent, parameter-free reference against which the learned depth is validated.
+
+![The frozen stack's per-layer endpoint estimate refines through layers 1–6 (0.909 → 0.881) then degrades over the final two layers; the convergence layer argminₖ Dₖ is per-perturbation and spans all eight layers.](figures/fig02_perlayer_refine.png)
+
+***Figure 2.** The frozen stack's per-layer endpoint estimate refines through layers 1–6 (0.909 → 0.881) then degrades over the final two layers; the convergence layer argminₖ Dₖ is per-perturbation and spans all eight layers.*
 
 ### 4.2 Depth as a measurement, not compute-time
 
@@ -105,6 +111,10 @@ On K562 (n = 968 perturbations, 4 seeds × 50 epochs, held-out validation), the 
 
 A naive learned gate, by contrast, collapses to a per-seed constant with no per-perturbation structure. The signature exists only with the oracle scaffold — a probe token, an unsaturated gate, and a magnitude-free target.
 
+![Oracle-supervised learned ACT on frozen STATE (K562, n = 968): learned E[N] spreads across perturbations; reproducible across seeds (ρ = 0.76); recovers the oracle round (ρ = 0.61); not an effect-size proxy (partial ρ = −0.04).](figures/fig03_k562_oracle_act.png)
+
+***Figure 3.** Oracle-supervised learned ACT on frozen STATE (K562, n = 968): learned E[N] spreads across perturbations; reproducible across seeds (ρ = 0.76); recovers the oracle round (ρ = 0.61); not an effect-size proxy (partial ρ = −0.04).*
+
 ### 5.2 Reproducible within a context, not across
 
 We retrain the halt head on each of four Replogle lines (K562, HepG2, Jurkat, RPE1; few-shot on the frozen pretrained backbone, single-cell, no from-scratch confound) and compare the model's E[N] across independent halves and across lines (Figures 4, 5).
@@ -122,6 +132,18 @@ A three-tier decomposition (Table 2) locates where the dependence lives by askin
 | The donor subset (different donors) | 0.06 |
 
 The reading: on a fixed pretrained backbone — the way the model is actually deployed — the depth signature is *cell-type-specific*, reproducible within a context but not shared across contexts. The backbone-seed tier (0.29) shows a secondary dependence on the particular fit when the backbone itself is retrained from scratch, which is a robustness caveat rather than the deployment case. Portability across donors is a decisive negative, and it is the expected behaviour of a context-specific property, not evidence that depth is a mere training artifact.
+
+![Learned-E[N] split-half reproducibility: within each line the learned E[N] reproduces above the data-derived oracle depth and below the effect-size noise ceiling; reproducible within a cell type (mean 0.80), absent across contexts.](figures/fig04_learned_splithalf.png)
+
+***Figure 4.** Learned-E[N] split-half reproducibility: within each line the learned E[N] reproduces above the data-derived oracle depth and below the effect-size noise ceiling; reproducible within a cell type (mean 0.80), absent across contexts.*
+
+![Cross-cell-line test on frozen pretrained ARC ST-SE-Replogle: within-line reproducible (ρ = 0.76–0.85), cross-line weak (ρ = 0.14, n = 194 shared perturbations).](figures/fig05_cross_line.png)
+
+***Figure 5.** Cross-cell-line test on frozen pretrained ARC ST-SE-Replogle: within-line reproducible (ρ = 0.76–0.85), cross-line weak (ρ = 0.14, n = 194 shared perturbations).*
+
+![Donor stability — leave-one-donor-out on a pooled three-context CD4⁺ T-cell model: reproduces within a fitted model (0.93), decays to zero across donors (0.06) through an intermediate backbone-seed tier (0.29).](figures/fig06_donor_stability.png)
+
+***Figure 6.** Donor stability — leave-one-donor-out on a pooled three-context CD4⁺ T-cell model: reproduces within a fitted model (0.93), decays to zero across donors (0.06) through an intermediate backbone-seed tier (0.29).*
 
 ### 5.3 What depth tracks biologically, across four lines
 
@@ -144,9 +166,13 @@ To characterise what depth tracks — and to confirm effect-independence beyond 
 
 **Effect-independence holds in all four lines.** After regressing out #DE and cell count, the partial correlation between depth and effect size collapses to +0.03 (K562), −0.02 (RPE1), +0.07 (Jurkat), and +0.16 (HepG2, the only weak residual, p = 0.03). The raw depth↔magnitude correlation is thus mediated by DE-gene count, not by a direct dependence on effect size — the K562 anchor (partial −0.04) reproduced across the panel.
 
+![Halting depth E[N]: reproducible sign, effect-independent across all four lines — full-panel covariates, target-in-panel controls, and the effect-independence partial test.](figures/fig07_bio_validation.png)
+
+***Figure 7.** Halting depth E[N]: reproducible sign, effect-independent across all four lines — full-panel covariates, target-in-panel controls, and the effect-independence partial test.*
+
 ### 5.4 Halting-depth clusters organize druggability and toxicity
 
-§5.1–§5.3 treat E[N] as a scalar and test it *linearly* against covariates. That view is deliberately conservative, and it is also where a real pattern hides. When perturbations are *clustered on the depth signature itself* — the four-seed E[N] fingerprint with halt confidence and the oracle round r\*, reduced by UMAP and partitioned by Leiden into 9–11 clusters per line (Figure 8) — and each cluster is cross-referenced against a 1,708-gene provenance-tagged drug/toxicity annotation, the clusters resolve into functional strata with sharply different pharmacological profiles.
+§5.1–§5.3 treat E[N] as a scalar and test it *linearly* against covariates. That view is deliberately conservative, and it is also where a real pattern hides. When perturbations are *clustered on the depth signature itself* — the four-seed E[N] fingerprint with halt confidence and the oracle round r\*, reduced by UMAP and partitioned by Leiden into 9–11 clusters per line (Figure 8) — and each cluster is cross-referenced against a 1,708-gene provenance-tagged drug/toxicity annotation (collected with autocollect-bio, a data-collection skill built with Claude Science), the clusters resolve into functional strata with sharply different pharmacological profiles.
 
 **The depth axis recovers functional gene classes.** Labelling each Leiden cluster by its most over-represented GO-Biological-Process theme (≥ 1.3× enrichment vs the line background) gives coherent, data-driven identities: the deepest cluster is translation/ribosome-dominated in HepG2 (4.1×), Jurkat (4.1×), and RPE1 (4.5×); DNA-replication/repair and mRNA-splicing occupy mid-depth clusters; transcription-regulation sits shallowest (HepG2 3.7×). K562 is inverted, as everywhere else in this paper: its translation/ribosome cluster is the *shallowest* (E[N] = 2.0, 2.2×), mirroring the depth sign flip of §5.3.
 
@@ -161,6 +187,14 @@ To characterise what depth tracks — and to confirm effect-independence beyond 
 
 **Toxicity and essentiality co-localize in the same clusters.** These drug-dense clusters are also the most safety-flagged and most essential: in HepG2 the deep translation cluster is 97% common-essential (OR 13.6) and 90% safety-flagged (OR 5.8); Jurkat's c9 is 97% essential (OR 12.9); K562's shallow translation cluster is 94% safety-flagged (OR 9.4); RPE1's deep c6 is 83% safety-flagged (OR 3.2). The depth signature therefore separates perturbations into strata that differ jointly in druggability *and* toxicity liability, and the drug-and-toxicity-dense stratum sits at whichever depth extreme the translation/ribosome machinery occupies in that line.
 
+![Depth-signature UMAP with Leiden clusters annotated by fold-enriched GO-BP theme and mean E[N], per Replogle line; translation/ribosome clusters anchor the depth extreme (deepest in HepG2/Jurkat/RPE1, shallowest in K562).](figures/fig08_depth_umap_leiden.png)
+
+***Figure 8.** Depth-signature UMAP with Leiden clusters annotated by fold-enriched GO-BP theme and mean E[N], per Replogle line; translation/ribosome clusters anchor the depth extreme (deepest in HepG2/Jurkat/RPE1, shallowest in K562).*
+
+![Halting-depth clusters organize drug-target density and toxicity: approved/clinical targets peak in the translation/ribosome cluster; essentiality and safety-flag density rise toward the depth extreme.](figures/fig09_depth_drug_toxicity.png)
+
+***Figure 9.** Halting-depth clusters organize drug-target density and toxicity: approved/clinical targets peak in the translation/ribosome cluster; essentiality and safety-flag density rise toward the depth extreme.*
+
 ### 5.5 The descriptor is non-redundant with network topology — but non-additive for one ranking task
 
 The organization above is real and reproducible across all four lines, and it is mechanistically coherent: the translation/ribosome cluster is simultaneously drug-target-rich (many established oncology targets act on translation and ribosome biogenesis), essential, and safety-flagged, and the halting depth places it at a reproducible extreme of the refinement axis. This is a genuine structuring of the target landscape by the depth signature — not merely a restatement of effect size, since the linear effect-size and depth correlations are weak (§5.3). It is descriptive rather than causal: depth clusters provide a *map of where druggable-but-toxic machinery sits on the refinement axis*, useful for stratifying candidates by both opportunity and liability.
@@ -173,6 +207,10 @@ The critical question is whether this map is redundant with what a protein netwo
 
 **Caveat: directed coverage.** CollecTRI is TF→target only, so the directed downstream statistics are identically zero for the ∼88% of in-network perturbations that appear solely as targets; the directed test is under-powered and tie-dominated. Restricting to the 78 perturbations that are TFs with ≥ 1 downstream target, E[N] versus out-degree gives ρ = 0.38 (K562, p = 0.02), 0.46 (HepG2, p = 0.001), −0.01 (Jurkat), 0.26 (RPE1) — a modest, *inconsistent* positive in two of four lines, still well below redundancy. The well-powered undirected PPI comparison (n ≈ 900–1030 per line) is the primary result and is unambiguous.
 
+![Halting depth E[N] is non-redundant with network topology: no directed-GRN or undirected-PPI statistic reproduces its per-perturbation ordering (best |ρ| = 0.23, below a 0.3 novelty ceiling; none near a 0.5 redundancy floor).](figures/fig10_grn_nonredundancy.png)
+
+***Figure 10.** Halting depth E[N] is non-redundant with network topology: no directed-GRN or undirected-PPI statistic reproduces its per-perturbation ordering (best |ρ| = 0.23, below a 0.3 novelty ceiling; none near a 0.5 redundancy floor).*
+
 ### 5.6 Single-cell refinement depth in primary CD4+ T cells
 
 We applied STATE oracle-ACT to a two-donor, single-cell subsample of the genome-wide Marson/Pritchard GWCD4i CD4+ T-cell CRISPRi screen (donors D1 and D4, three activation states — resting, stimulated 8h, stimulated 48h — 2000 HVG). The Part-2 question is whether inflammatory-program suppressors carry a distinct refinement signature, and whether the depth signature ports where the biology converges (Figure 11).
@@ -181,9 +219,13 @@ We applied STATE oracle-ACT to a two-donor, single-cell subsample of the genome-
 - **Donor-specific until the biology converges:** cross-donor agreement is ≈ 0 in the resting state (ρ = −0.11, n = 5745) but reaches ρ = 0.49 at the fully stimulated 48h endpoint (n = 5840), exactly where cells from different donors converge onto a shared activation program.
 - **Depth separates phenotype categories at 48h** (Kruskal–Wallis p = 5 × 10⁻²⁸): resting-sparing inflammatory-program suppressors converge faster — lower E[N] — than damaging (Cliff's δ = −0.16) and generic (δ = −0.24) perturbations.
 
-This mirrors the cross-line result of §5.2: the signature ports where, and only where, the biology converges — and it independently reproduces concurrent evidence that the informative layer of a single-cell foundation model is set by cellular context [16].
+This mirrors the cross-line result of §5.2: the signature ports where, and only where, the biology converges.
 
 **A cell-context-dependent drug negative.** Clustering the 12-feature CD4 signature (E[N], halt confidence, nonlinear/predicted-error × 3 conditions) yields nine well-separated groups (Leiden modularity 0.66), organized by condition-dependent refinement *dynamics* rather than static pathway family; one cluster is a distinct shallow/fast-converging island (E[N] ≈ 5.9 vs 7.2–7.6 elsewhere). Unlike the Replogle lines, where approved and clinical drug targets concentrated in the translation/ribosome cluster (§5.4, OR 2.8–9.8), no CD4 depth cluster is enriched for drug targets (all OR 0.64–1.25, no significant p), with flat druggability and toxicity across depth clusters (approved-drug-target fraction 5–8%, DepMap-essential 1–2% against a 1.6% background, LoF-intolerant 4–8%). There is no essentiality or druggability contrast across CD4 depth clusters to drive the drug/depth co-localization seen in the Replogle lines; the drug/depth pattern is itself cell-context-dependent, reinforcing rather than weakening the cell-type-specificity conclusion.
+
+![CD4⁺ T-cell single-cell refinement depth: within-donor reproducibility rises with stimulation (0.62/0.68/0.75); cross-donor transfer only at the 48h endpoint (ρ 0 → 0.49); resting-sparing suppressors converge faster (Kruskal–Wallis p = 5 × 10⁻²⁸).](figures/fig11_cd4_singlecell.png)
+
+***Figure 11.** CD4⁺ T-cell single-cell refinement depth: within-donor reproducibility rises with stimulation (0.62/0.68/0.75); cross-donor transfer only at the 48h endpoint (ρ 0 → 0.49); resting-sparing suppressors converge faster (Kruskal–Wallis p = 5 × 10⁻²⁸).*
 
 ### 5.7 Cell-state robustness (exploratory)
 
@@ -194,6 +236,10 @@ As an exploratory side-analysis, we read halting from the four frozen Replogle b
 - **Trajectory geometry distinguishes deep from shallow:** the model-implied per-layer trajectory of deep-E[N] perturbations dips mid-trajectory then recovers — the model must re-orient its prediction before snapping onto the target direction — while shallow perturbations approach monotonically.
 
 Halting is read from the frozen backbones with no retraining and no temporal labels. The state-invariance supports the reading of E[N] as a property of the *response*, coupled to the geometry of the model's internal trajectory rather than to the starting state of the cell.
+
+![Cell-state robustness (exploratory, four frozen Replogle lines): trajectory dips then recovers for deep-E[N] perturbations; E[N] state-invariant (ρ = 0.996–0.999 G1 vs G2M); within-state split-half ρ ≥ 0.83.](figures/fig12_cellstate.png)
+
+***Figure 12.** Cell-state robustness (exploratory, four frozen Replogle lines): trajectory dips then recovers for deep-E[N] perturbations; E[N] state-invariant (ρ = 0.996–0.999 G1 vs G2M); within-state split-half ρ ≥ 0.83.*
 
 ### 5.8 From-scratch pseudobulk (exploratory limitation)
 
@@ -225,33 +271,9 @@ Methodologically, this paper's contribution is a reframing: adaptive-depth halti
 
 ---
 
-## Figures and Tables
-
-*(Figures and tables are referenced by number; the typeset figures live in the accompanying figure set.)*
-
-- **Figure 1.** Where adaptive-refinement hosts sit: 43 perturbation models (2024–2026) by family track and ACT-graftability; 11 of 43 graftable (HIGH / MEDIUM-HIGH).
-- **Figure 2.** The frozen stack's per-layer endpoint estimate refines through layers 1–6 (0.909 → 0.881) then degrades over the final two layers; the convergence layer arg min_k D_k is per-perturbation and spans all eight layers.
-- **Figure 3.** Oracle-supervised learned ACT on frozen STATE (K562, n = 968): learned E[N] spreads across perturbations; reproducible across seeds (ρ = 0.76); recovers the oracle round (ρ = 0.61); not an effect-size proxy (partial ρ = −0.04).
-- **Figure 4.** Learned-E[N] split-half reproducibility: within each line the learned E[N] reproduces (purple), between the data-derived oracle depth (teal) and the effect-size noise ceiling (grey); reproducible within a cell type (mean 0.80), absent across contexts (cross-line 0.14, cross-donor 0.06).
-- **Figure 5.** Cross-cell-line test on frozen pretrained ARC ST-SE-Replogle: within-line reproducible (ρ = 0.76–0.85), cross-line weak (ρ = 0.14, n = 194); reproducibility decays 0.93 → 0.29 → 0.14 → 0.06.
-- **Figure 6.** Donor stability — leave-one-donor-out on a pooled three-context CD4+ T-cell model: reproduces within a fitted model (0.93), decays to zero across donors (0.06) through an intermediate backbone-seed tier (0.29).
-- **Figure 7.** Halting depth E[N]: reproducible sign, effect-independent (all four lines) — full-panel covariates, target-in-panel controls, and the effect-independence partial test.
-- **Figure 8.** Depth-signature UMAP with Leiden clusters annotated by fold-enriched GO-BP theme and mean E[N], per Replogle line; translation/ribosome clusters anchor the depth extreme (deepest in HepG2/Jurkat/RPE1, shallowest in K562).
-- **Figure 9.** Halting-depth clusters organize drug-target density and toxicity: approved/clinical targets peak in the translation/ribosome cluster; essentiality and safety-flag density rise toward the depth extreme where the ribosomal machinery sits.
-- **Figure 10.** Halting depth E[N] is non-redundant with network topology: E[N] vs directed-GRN cascade depth (no relationship); |ρ| between E[N] and ten network statistics all below the 0.3 novelty ceiling, none near the 0.5 redundancy floor; strongest correlate PPI degree at |ρ| = 0.23 with inconsistent sign.
-- **Figure 11.** CD4+ T-cell single-cell refinement depth: within-donor reproducibility rises with stimulation (0.62/0.68/0.75); cross-donor transfer only at the 48h endpoint (ρ 0 → 0.49); resting-sparing suppressors converge faster (Kruskal–Wallis p = 5 × 10⁻²⁸; δ = −0.16 to −0.24).
-- **Figure 12.** Cell-state robustness of refinement depth (exploratory, four frozen Replogle lines): trajectory dips then recovers for deep-E[N] perturbations; E[N] state-invariant (ρ = 0.996–0.999 G1 vs G2M); within-state split-half ρ ≥ 0.83.
-
-- **Table 1.** Identifiability-wall outcomes: grafting hosts against the two-corner test (reproducible and effect-independent).
-- **Table 2.** Three-tier reproducibility decomposition: what varies between two fits vs E[N] reproducibility ρ.
-- **Table 3.** Biological validation, all four lines: Spearman ρ of E[N] against each covariate.
-- **Table 4.** Approved/clinical drug targets concentrate in the translation/ribosome depth cluster (Fisher exact vs the rest of the line).
-
----
-
 ## References
 
-*(Numbered citations [1]–[15] in the body correspond to the existing bibliography; align numbering with the source `.bib`. Key sources are listed here with [16] the concurrent single-cell-layer-depth work.)*
+*(Numbered citations [1]–[15] in the body correspond to the existing bibliography; align numbering with the source `.bib`. Key sources are listed here.)*
 
 - **[1]** A. Graves. *Adaptive Computation Time for Recurrent Neural Networks.* arXiv:1603.08983, 2016.
 - **[2]** A. Banino, J. Balaguer, C. Blundell. *PonderNet: Learning to Ponder.* ICML Workshop, 2021.
@@ -262,4 +284,3 @@ Methodologically, this paper's contribution is a reframing: adaptive-depth halti
 - Marson / Pritchard **GWCD4i** genome-wide CD4+ T-cell CRISPRi Perturb-seq screen.
 - STRING protein–protein interaction database; **CollecTRI** TF→target regulatory network.
 - Open Targets, ChEMBL, DepMap, Pharos, gnomAD, FDA — drug/toxicity/essentiality annotation sources (compiled with provenance on every value over the 1,708-gene target union).
-- **[16]** V. Y. Civale, R. Semeraro, A. D. Bagdanov, A. Magi. *Intermediate Layers Encode Optimal Biological Representations in Single-Cell Foundation Models.* arXiv:2604.14838, 2026.

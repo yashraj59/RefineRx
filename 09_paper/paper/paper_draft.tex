@@ -800,7 +800,8 @@ of where druggable-but-toxic machinery sits on the refinement axis}, useful for 
 candidates by both opportunity and liability. Critically, this signal is recovered from the
 \emph{depth signature alone}; Section~\ref{sec:drug} shows that once a STRING-network baseline is
 added, the same biology is absorbed by the network prior and \EN{} shows no incremental value ---
-the network encodes the identical module structure, so the two are redundant, not contradictory.
+the network encodes the identical module structure, so for that one ranking task the two are
+non-additive, not contradictory (they remain non-redundant as descriptors, Section~\ref{sec:grn}).
 
 \FloatBarrier
 \subsection{Incremental value of depth over a response-plus-network prior}
@@ -813,8 +814,10 @@ discovery pipeline that clusters perturbations by fused response and STRING-netw
 then ranks undrugged perturbations by their similarity and STRING adjacency to approved/clinical
 \emph{anchor} targets. The tested hypothesis is precise: \emph{does adding the ACT halting axis
 $|\Delta\EN{}|$ improve drug-target-class discrimination beyond response and network similarity?}
-Annotation over the 1708-gene union (74 fields) is Claude-generated from public databases
-(Open Targets~\cite{opentargets2023}, ChEMBL, gnomAD, DepMap, Pharos, STRING, FDA) with per-value source tags --- it is
+Annotation over the 1708-gene union (74 fields) was collected with \texttt{autocollect-bio}, a
+skill created using Claude Science for zero-fabrication data collection (every value paired with its source and
+date; queried-but-absent recorded as \texttt{NOT\_FOUND} rather than guessed), from public databases
+(Open Targets~\cite{opentargets2023}, ChEMBL, gnomAD, DepMap, Pharos, STRING, FDA) --- it is
 not hand-curated, and every candidate is a hypothesis (``same class as anchor $X$''), not a
 validated target.
 
@@ -1199,7 +1202,8 @@ with ARC's full decode; only the depth \emph{ordering} is used, and it reproduce
 (5)~\emph{Interpretation ceiling.} Because the data are single endpoints, depth is a computational
 proxy for response complexity, and no biological-time or causal-depth reading is licensed.
 (6)~\emph{Annotation provenance.} The drug-discovery annotation is Claude-generated from public
-databases, not expert-curated; candidates are hypotheses.
+databases with a zero-fabrication discipline (\texttt{autocollect-bio}: per-value source tags,
+explicit \texttt{NOT\_FOUND}), not expert-curated; candidates are hypotheses.
 
 \paragraph{Future work.} The natural next steps are a $\tau$-sensitivity sweep; a same-gene
 guide-reproducibility test now that the anti-circularity guardrail keeps it non-circular; testing
